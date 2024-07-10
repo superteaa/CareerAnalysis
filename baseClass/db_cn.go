@@ -1,16 +1,48 @@
 package baseClass
 
 import (
+    "context"
+    "encoding/json"
+    "io/ioutil"
     "log"
     "github.com/go-redis/redis/v8"
     "gorm.io/driver/mysql"
     "gorm.io/gorm"
-    "context"
 )
+
+// Config 结构体表示config.json中的配置
+type Config struct {
+    MySQL struct {
+        Username string `json:"username"`
+        Password string `json:"password"`
+        Host     string `json:"host"`
+        Port     string `json:"port"`
+        DBName   string `json:"dbname"`
+    } `json:"mysql"`
+    Redis struct {
+        Addr     string `json:"addr"`
+        Password string `json:"password"`
+        DB       int    `json:"db"`
+    } `json:"redis"`
+}
 
 // InitDB 初始化MySQL数据库连接
 func InitDB() *gorm.DB {
-    dsn := "root:123456@tcp(127.0.0.1:3306)/careeranalysis?charset=utf8mb4&parseTime=True&loc=Local"
+	data, err := ioutil.ReadFile("config.json")
+    if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+        return nil
+    }
+    var config Config
+    err = json.Unmarshal(data, &config)
+    if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+        return nil
+    }
+
+    dsn := config.MySQL.Username + ":" + config.MySQL.Password + "@tcp(" +
+        config.MySQL.Host + ":" + config.MySQL.Port + ")/" + config.MySQL.DBName +
+        "?charset=utf8mb4&parseTime=True&loc=Local"
     db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
     if err != nil {
         log.Fatal("Failed to connect to database:", err)
@@ -20,10 +52,22 @@ func InitDB() *gorm.DB {
 
 // InitRedis 初始化Redis连接
 func InitRedis() *redis.Client {
+	data, err := ioutil.ReadFile("config.json")
+    if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+        return nil
+    }
+    var config Config
+    err = json.Unmarshal(data, &config)
+    if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+        return nil
+    }
+
     rdb := redis.NewClient(&redis.Options{
-        Addr:     "localhost:6379",
-        Password: "", // no password set
-        DB:       0,  // use default DB
+        Addr:     config.Redis.Addr,
+        Password: config.Redis.Password, // no password set
+        DB:       config.Redis.DB,       // use default DB
     })
     return rdb
 }

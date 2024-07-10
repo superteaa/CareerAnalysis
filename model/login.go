@@ -34,7 +34,7 @@ func Login(c *gin.Context) {
         Password string `json:"password" binding:"required"`
     }
     if err := c.ShouldBindJSON(&request); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+        c.JSON(http.StatusOK, gin.H{"error": "Invalid request"})
         return
     }
 
@@ -45,7 +45,7 @@ func Login(c *gin.Context) {
 
     var user User
     if err := db.Where("username = ?", request.Username).First(&user).Error; err != nil {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+        c.JSON(http.StatusOK, gin.H{"error": "Invalid username or password"})
         return
     }
 
@@ -73,7 +73,7 @@ func Signup(c *gin.Context) {
     }
     if err := c.ShouldBindJSON(&request); err != nil {
         fmt.Println(err)
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+        c.JSON(http.StatusOK, gin.H{"error": "Invalid request"})
         return
     }
 
@@ -83,7 +83,7 @@ func Signup(c *gin.Context) {
     // 检查用户名是否已经存在
     var existingUser User
     if err := db.Where("username = ?", request.Username).First(&existingUser).Error; err == nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
+        c.JSON(http.StatusOK, gin.H{"error": "Username already exists"})
         return
     }
 
