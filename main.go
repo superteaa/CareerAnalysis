@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"CareerAnalysis/model"
+	"CareerAnalysis/baseClass"
 	"encoding/json"
     "io/ioutil"
 	"log"
@@ -30,6 +31,21 @@ func main() {
 	r := gin.Default()
 	r.POST("/login", model.Login)
 	r.POST("/signup", model.Signup)
+	r.POST("/hello", func (c *gin.Context){
+		if err := baseClass.ValidateJWT(c); err == nil{
+			ID, exists := c.Get("userID")
+			if(exists){
+				c.JSON(200, gin.H{
+					"ID": ID,
+				})
+			} else {
+				c.JSON(200, gin.H{
+					"ID": ID,
+				})
+			}
+		}
+
+	})
 	LoadConfig()
 	r.Run(":" + config.Server.Port) // 监听并启动服务
 }

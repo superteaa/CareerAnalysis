@@ -3,6 +3,9 @@ package baseClass
 import (
     "github.com/dgrijalva/jwt-go"
     "time"
+    "github.com/gin-gonic/gin"
+    "net/http"
+    "errors"
 )
 
 var jwtKey = []byte("goodAndgood")
@@ -28,16 +31,27 @@ func GenerateJWT(userID uint) (string, error) {
 }
 
 // ValidateJWT 验证JWT
-func ValidateJWT(tokenString string) (*Claims, error) {
+func ValidateJWT(c *gin.Context) (error) {
+    tokenString := c.GetHeader("Authorization")
+    if tokenString == "" {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header missing"})
+        c.Abort()
+        return errors.New("Authorization missing")
+    }
+
     claims := &Claims{}
-    token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+    _, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
         return jwtKey, nil
     })
-    if err != nil {
-        return nil, err
+
+    if err != nil{
+        c.JSON(http.StatusOK, gin.H{"error": "Bad token"})
+        c.Abort()
+        return err
     }
-    if !token.Valid {
-        return nil, err
-    }
-    return claims, nil
+
+    c.Set("userID", claims.UserID)
+    c.Next()
+
+    return nil
 }
