@@ -68,7 +68,9 @@ curl -X POST "http://localhost:8080/login" -H "Content-Type: application/json" -
 {
     "username": "string",  // 用户名，必填
     "password": "string",  // 密码，必填
-    "email": "string"      // 邮箱，必填
+    "email": "string",      // 邮箱，必填
+    "captchaId": "string",  // 验证码ID，必填
+    "value": "string"  // 验证码，必填
 }
 ```
 
@@ -125,3 +127,119 @@ curl -X POST "http://localhost:8080/signup" -H "Content-Type: application/json" 
 - `Username already exists`: 用户名已存在。
 - `Failed to create user`: 创建用户失败，通常是数据库操作失败。
 - `Failed to create session`: 创建会话失败，通常是JWT生成失败。
+- `Invalid captcha`: 验证码错误
+
+---
+
+
+以下是关于验证码获取的接口文档。该文档描述了生成验证码 ID 和获取验证码图片的 API 接口，包括请求方法、URL、参数、响应格式以及示例。
+
+## 接口三：生成验证码 ID
+
+### 请求
+
+- **方法**：`GET`
+- **URL**：`/captcha`
+
+### 描述
+
+此接口用于生成一个新的验证码 ID。
+
+### 响应
+
+- **状态码**：
+  - `200 OK`：成功生成验证码 ID
+  - `500 Internal Server Error`：服务器内部错误
+
+- **响应体**：
+  - **成功**：
+    ```json
+    {
+      "captchaId": "some-valid-captcha-id"
+    }
+    ```
+  - **失败**：
+    ```json
+    {
+      "error": "Failed to generate captcha image"
+    }
+    ```
+
+### 示例
+
+#### 请求示例
+
+```
+GET /captcha
+```
+
+#### 响应示例
+
+```json
+{
+  "captchaId": "abc123"
+}
+```
+
+---
+
+## 接口四: 获取验证码图片
+
+### 请求
+
+- **方法**：`GET`
+- **URL**：`/captcha/:captchaId`
+
+### 描述
+
+此接口用于根据给定的验证码 ID 获取对应的验证码图片。
+
+### 参数
+
+- **路径参数**：
+  - `captchaId` (string)：验证码 ID，必须由 `Createcaptchaid` 接口生成。
+
+### 响应
+
+- **状态码**：
+  - `200 OK`：成功返回验证码图片
+  - `500 Internal Server Error`：服务器内部错误，未能生成验证码图片
+
+- **响应体**：
+  - **成功**：返回验证码图片，内容类型为 `image/png`。
+  - **失败**：
+    ```json
+    {
+      "error": "Failed to generate captcha image"
+    }
+    ```
+
+### 示例
+
+#### 请求示例
+
+```
+GET /captcha/abc123
+```
+
+#### 响应示例
+
+- **成功的响应**：将返回一个 PNG 图片，浏览器会直接显示该图片。
+
+- **失败的响应**：
+
+```json
+{
+  "error": "Failed to generate captcha image"
+}
+```
+
+---
+
+## 注意事项
+
+1. 在调用 `GET /captcha/:captchaId` 接口之前，务必先调用 `GET /captcha` 接口以生成验证码 ID。
+
+---
+
+以上就是接口文档的示例。如果需要添加更多细节或其他接口，请告诉我！

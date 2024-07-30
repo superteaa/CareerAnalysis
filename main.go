@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"CareerAnalysis/model"
 	"CareerAnalysis/baseClass"
+	"CareerAnalysis/model"
 	"encoding/json"
-    "io/ioutil"
+	"io/ioutil"
 	"log"
+
+	"github.com/gin-gonic/gin"
 )
 
 var config struct {
@@ -17,24 +18,26 @@ var config struct {
 
 // LoadConfig 从文件中加载配置
 func LoadConfig() {
-    data, err := ioutil.ReadFile("config.json")
-    if err != nil {
+	data, err := ioutil.ReadFile("config.json")
+	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
-    }
-    err = json.Unmarshal(data, &config)
-    if err != nil {
+	}
+	err = json.Unmarshal(data, &config)
+	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
-    }
+	}
 }
 
 func main() {
 	r := gin.Default()
 	r.POST("/login", model.Login)
 	r.POST("/signup", model.Signup)
-	r.POST("/hello", func (c *gin.Context){
-		if err := baseClass.ValidateJWT(c); err == nil{
+	r.GET("/captcha/:captchaId", model.Getcaptchaimg)
+	r.GET("/captcha", model.Createcaptchaid)
+	r.POST("/hello", func(c *gin.Context) {
+		if err := baseClass.ValidateJWT(c); err == nil {
 			ID, exists := c.Get("userID")
-			if(exists){
+			if exists {
 				c.JSON(200, gin.H{
 					"ID": ID,
 				})
