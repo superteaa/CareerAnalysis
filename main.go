@@ -34,21 +34,26 @@ func main() {
 	r.POST("/signup", model.Signup)
 	r.GET("/captcha/:captchaId", model.Getcaptchaimg)
 	r.GET("/captcha", model.Createcaptchaid)
-	r.POST("/hello", func(c *gin.Context) {
-		if err := baseClass.ValidateJWT(c); err == nil {
-			ID, exists := c.Get("userID")
-			if exists {
-				c.JSON(200, gin.H{
-					"ID": ID,
-				})
-			} else {
-				c.JSON(200, gin.H{
-					"ID": ID,
-				})
-			}
-		}
+	authorized := r.Group("/")
+	authorized.Use(baseClass.ValidateJWT())
+	{
+		authorized.GET("/getnewlist", model.GetNewList)
+	}
+	// r.POST("/hello", func(c *gin.Context) {
+	// 	if err := baseClass.ValidateJWT(c); err == nil {
+	// 		ID, exists := c.Get("userID")
+	// 		if exists {
+	// 			c.JSON(200, gin.H{
+	// 				"ID": ID,
+	// 			})
+	// 		} else {
+	// 			c.JSON(200, gin.H{
+	// 				"ID": ID,
+	// 			})
+	// 		}
+	// 	}
 
-	})
+	// })
 	LoadConfig()
 	r.Run(":" + config.Server.Port) // 监听并启动服务
 }

@@ -42,8 +42,6 @@ func Login(c *gin.Context) {
 
 	// 初始化数据库和Redis连接
 	db := baseClass.InitDB()
-	rdb := baseClass.InitRedis()
-	defer rdb.Close()
 
 	var user User
 	if err := db.Where("username = ?", request.Username).First(&user).Error; err != nil {

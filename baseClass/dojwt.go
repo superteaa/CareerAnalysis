@@ -1,7 +1,6 @@
 package baseClass
 
 import (
-	"errors"
 	"net/http"
 	"time"
 
@@ -32,27 +31,28 @@ func GenerateJWT(userID uint) (string, error) {
 }
 
 // ValidateJWT 验证JWT
-func ValidateJWT(c *gin.Context) error {
-	tokenString := c.GetHeader("Authorization")
-	if tokenString == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header missing"})
-		c.Abort()
-		return errors.New("Authorization missing")
+func ValidateJWT() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenString := c.GetHeader("Authorization")
+		if tokenString == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header missing"})
+			c.Abort()
+			return
+		}
+
+		claims := &Claims{}
+		_, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		})
+
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{"error": "Bad token"})
+			c.Abort()
+			return
+		}
+
+		c.Set("userID", claims.UserID)
+		c.Next()
+		return
 	}
-
-	claims := &Claims{}
-	_, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
-	})
-
-	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": "Bad token"})
-		c.Abort()
-		return err
-	}
-
-	c.Set("userID", claims.UserID)
-	c.Next()
-
-	return nil
 }
