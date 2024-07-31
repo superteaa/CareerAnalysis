@@ -2,6 +2,7 @@ package model
 
 import (
 	"CareerAnalysis/baseClass"
+	"log"
 
 	"net/http"
 
@@ -24,7 +25,12 @@ func GetNewList(c *gin.Context) {
 	defer rdb.Close()
 
 	var news []New
-	db.Find(&news)
+	db_result := db.Find(&news)
+	if db_result.Error != nil {
+		log.Println("查询数据库失败:", db_result.Error)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "查询数据库失败"})
+		return
+	}
 
 	var result []map[string]interface{}
 	for _, new := range news {
