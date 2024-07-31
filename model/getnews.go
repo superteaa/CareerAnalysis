@@ -15,7 +15,7 @@ type New struct {
 	Title string
 	Body  string
 	Date  string
-	Icon  string
+	Icon  string `gorm:"column:icon_url"`
 }
 
 func GetNewList(c *gin.Context) {
