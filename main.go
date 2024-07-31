@@ -48,7 +48,8 @@ func main() {
 	authorized := r.Group("/")
 	authorized.Use(baseClass.ValidateJWT())
 	{
-		authorized.GET("/getnewlist", model.GetNewList)
+		authorized.GET("/get-new-list", model.GetNewList)
+		authorized.GET("/get-skill-list", model.GetSkillList)
 	}
 	// r.POST("/hello", func(c *gin.Context) {
 	// 	if err := baseClass.ValidateJWT(c); err == nil {
