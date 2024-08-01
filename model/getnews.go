@@ -35,13 +35,30 @@ func GetNewList(c *gin.Context) {
 	var result []map[string]interface{}
 	for _, new := range news {
 		newMap := map[string]interface{}{
-			"Title": new.Title,
-			"Body":  new.Body,
-			"Date":  new.Date,
-			"Icon":  new.Icon,
+			"news_id": new.ID,
+			"title":   new.Title,
+			// "Body":  new.Body,
+			"date":     new.Date,
+			"icon_url": new.Icon,
 		}
 		result = append(result, newMap)
 	}
 
 	c.JSON(http.StatusOK, result)
+}
+
+func GetNews(c *gin.Context) {
+	news_id := c.Query("news_id")
+	// 初始化数据库和Redis连接
+	db := baseClass.InitDB()
+	var news New
+	db_result := db.Where("id = ?", news_id).First(&news)
+	if db_result.Error != nil {
+		log.Println("查询数据库失败:", db_result.Error)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "查询数据库失败"})
+		return
+	}
+
+	c.JSON(http.StatusOK, news)
+
 }
