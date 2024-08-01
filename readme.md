@@ -31,12 +31,10 @@
     "error": "Invalid request"         // 请求格式错误
 }
 或
-```json
 {
     "error": "Invalid username or password"  // 用户名或密码错误
 }
 或
-```json
 {
     "error": "Failed to create session"  // 创建会话失败
 }
@@ -89,17 +87,14 @@ curl -X POST "http://localhost:8080/login" -H "Content-Type: application/json" -
     "error": "Invalid request"         // 请求格式错误
 }
 或
-```json
 {
     "error": "Username already exists" // 用户名已存在
 }
 或
-```json
 {
     "error": "Failed to create user"  // 创建用户失败
 }
 或
-```json
 {
     "error": "Failed to create session"  // 创建会话失败
 }
@@ -222,19 +217,9 @@ GET /captcha
 GET /captcha/abc123
 ```
 
-#### 响应示例
 
-- **成功的响应**：将返回一个 PNG 图片，浏览器会直接显示该图片。
 
-- **失败的响应**：
 
-```json
-{
-  "error": "Failed to generate captcha image"
-}
-```
-
----
 
 ## 注意事项
 
@@ -248,7 +233,7 @@ GET /captcha/abc123
 `GetSkillList` 接口用于获取指定用户的技能列表，并返回每个技能的花费时间及总花费时间的汇总信息。
 
 #### **请求 URL**
-`GET /get-skill-list`
+`GET /skill/get-skill-list`
 
 
 
@@ -305,7 +290,66 @@ GET /captcha/abc123
 | ------ | -------------------- |
 | 200    | 用户不存在或无数据   |
 | 500    | 内部服务器错误       |
+<br>
+<br>
+---
+
+## 新闻相关 API 接口文档
+### 获取新闻列表（包含图标，标题，日期）
+### 请求
+
+- **方法**：`GET`
+- **URL**：`/new/get-news-list`
+
+### 描述
+
+此接口用于获取新闻列表，未做分页等处理。
+
+### 参数
+- `Authorization: Bearer <token>`
+  - 用于用户鉴权的 JWT token
 
 
+### 响应
+
+- **状态码**：
+  - `200 OK`：成功返回新闻列表
+  - `500 Internal Server Error`：查询数据库失败
+
+- **响应体**：
+  - **成功**：返回新闻列表。
+    ```json
+    {
+      "news_id": 123,
+	  "title": "news1",
+	  "date": "17561688", //时间戳
+	  "icon_url": "https://www.google.com",
+    }
+    {
+      "news_id": 12,
+	  "title": "news2",
+	  "date": "17561888", //时间戳
+	  "icon_url": "https://www.microsoft.com",
+    }
+  - **失败**：
+    ```json
+    {
+      "error": "查询数据库失败"
+    }
+    ```
+
+### 示例
+
+#### 请求示例
+
+```
+GET /new/get-news-list
+```
+
+
+
+---
+<br>
+<br>
 
 以上就是接口文档的示例。如果需要添加更多细节或其他接口，请告诉我！
