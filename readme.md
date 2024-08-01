@@ -294,8 +294,8 @@ GET /captcha/abc123
 <br>
 ---
 
-## 新闻相关 API 接口文档
-### 获取新闻列表（包含图标，标题，日期）
+
+## 获取新闻列表（包含图标，标题，日期）
 ### 请求
 
 - **方法**：`GET`
@@ -303,10 +303,10 @@ GET /captcha/abc123
 
 ### 描述
 
-此接口用于获取新闻列表，未做分页等处理。
+此接口用于获取新闻列表，无详细新闻内容，未做分页等处理。
 
 ### 参数
-- `Authorization: Bearer <token>`
+**请求头**: `Authorization: Bearer <token>`
   - 用于用户鉴权的 JWT token
 
 
@@ -344,6 +344,58 @@ GET /captcha/abc123
 
 ```
 GET /new/get-news-list
+```
+
+---
+
+## 获取详细新闻信息
+### 请求
+
+- **方法**：`GET`
+- **URL**：`/new/get-news`
+
+### 描述
+
+此接口用于获取新闻详细信息。
+
+### 参数
+**请求头**： `Authorization: Bearer <token>`
+  - 用于用户鉴权的 JWT token
+  
+**请求体**：`news_id`
+  - 在获取新闻列表时，对应新闻的id
+
+
+### 响应
+
+- **状态码**：
+  - `200 OK`：成功返回新闻
+  - `500 Internal Server Error`：查询数据库失败
+
+- **响应体**：
+  - **成功**：返回新闻列表。
+    ```json
+    {
+      "news_id": 123,
+	  "title": "news1",
+      "body": "hi, im djfhajudghawu",
+	  "date": "17561688", //时间戳
+	  "icon_url": "https://www.google.com",
+    }
+
+  - **失败**：
+    ```json
+    {
+      "error": "查询数据库失败"
+    }
+    ```
+
+### 示例
+
+#### 请求示例
+
+```
+GET /new/get-news?news_id=12
 ```
 
 

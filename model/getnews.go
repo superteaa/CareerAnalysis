@@ -11,11 +11,11 @@ import (
 
 // new 模型
 type New struct {
-	ID    uint `gorm:"primaryKey"`
-	Title string
-	Body  string
-	Date  string
-	Icon  string `gorm:"column:icon_url"`
+	ID       uint `gorm:"primaryKey"`
+	Title    string
+	Body     string
+	Date     string
+	Icon_url string
 }
 
 func GetNewList(c *gin.Context) {
@@ -39,7 +39,7 @@ func GetNewList(c *gin.Context) {
 			"title":   new.Title,
 			// "Body":  new.Body,
 			"date":     new.Date,
-			"icon_url": new.Icon,
+			"icon_url": new.Icon_url,
 		}
 		result = append(result, newMap)
 	}
@@ -59,6 +59,14 @@ func GetNews(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, news)
+	result := map[string]interface{}{
+		"news_id":  news.ID,
+		"title":    news.Title,
+		"body":     news.Body,
+		"date":     news.Date,
+		"icon_url": news.Icon_url,
+	}
+
+	c.JSON(http.StatusOK, result)
 
 }
