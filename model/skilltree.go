@@ -9,7 +9,7 @@ import (
 )
 
 // Skill 模型
-type Skill struct {
+type Study struct {
 	// ID         uint `gorm:"primaryKey"`
 	UserID     uint `gorm:"column:user_id"`
 	Subject    string
@@ -17,17 +17,17 @@ type Skill struct {
 	// Date       string
 }
 
-func GetSkillList(c *gin.Context) {
+func GetStudyList(c *gin.Context) {
 	db := baseClass.InitDB()
 	userID, exists := c.Get("userID")
 
 	if !exists {
-		log.Println("GetSkillList:", "用户不存在")
+		log.Println("GetStudyList:", "用户不存在")
 		c.JSON(http.StatusOK, gin.H{"error": "用户不存在"})
 		return
 	}
 
-	var skills []Skill
+	var skills []Study
 
 	var subjects_info []map[string]interface{}
 

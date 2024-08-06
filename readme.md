@@ -227,13 +227,13 @@ GET /captcha/abc123
 
 ---
 
-## GetSkillList API 接口文档
+## GetStudyList API 接口文档
 
 #### **接口描述**
-`GetSkillList` 接口用于获取指定用户的技能列表，并返回每个技能的花费时间及总花费时间的汇总信息。
+`GetStudyList` 接口用于获取指定用户的技能列表，并返回每个技能的花费时间及总花费时间的汇总信息。
 
 #### **请求 URL**
-`GET /skill/get-skill-list`
+`GET /study/get-list`
 
 
 
@@ -299,7 +299,7 @@ GET /captcha/abc123
 ### 请求
 
 - **方法**：`GET`
-- **URL**：`/new/get-news-list`
+- **URL**：`/news/get-list`
 
 ### 描述
 
@@ -343,7 +343,7 @@ GET /captcha/abc123
 #### 请求示例
 
 ```
-GET /new/get-news-list
+GET /news/get-list
 ```
 
 ---
@@ -352,7 +352,7 @@ GET /new/get-news-list
 ### 请求
 
 - **方法**：`GET`
-- **URL**：`/new/get-news`
+- **URL**：`/news/get-detail`
 
 ### 描述
 
@@ -395,7 +395,7 @@ GET /new/get-news-list
 #### 请求示例
 
 ```
-GET /new/get-news?news_id=12
+GET /news/get-detail?news_id=12
 ```
 
 

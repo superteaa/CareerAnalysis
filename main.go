@@ -48,14 +48,18 @@ func main() {
 	authorized := r.Group("/")
 	authorized.Use(baseClass.ValidateJWT())
 	{
-		skill_r := authorized.Group("/skill")
+		study_r := authorized.Group("/study")
 		{
-			skill_r.GET("/get-skill-list", model.GetSkillList)
+			study_r.GET("/get-list", model.GetStudyList)
 		}
-		new_r := authorized.Group("/new")
+		new_r := authorized.Group("/news")
 		{
-			new_r.GET("/get-news-list", model.GetNewList)
-			new_r.GET("/get-news", model.GetNews)
+			new_r.GET("/get-list", model.GetNewList)
+			new_r.GET("/get-detail", model.GetNews)
+		}
+		dataAnalys_r := authorized.Group("/data-analys")
+		{
+			dataAnalys_r.GET("/get-list")
 		}
 	}
 	// r.POST("/hello", func(c *gin.Context) {
