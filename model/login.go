@@ -50,7 +50,7 @@ func Login(c *gin.Context) {
 	}
 
 	if !CheckPassword(request.Password, user.Password) {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Username and password do not match"})
+		c.JSON(http.StatusOK, gin.H{"error": "Username and password do not match"})
 		return
 	}
 
