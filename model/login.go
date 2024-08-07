@@ -45,12 +45,12 @@ func Login(c *gin.Context) {
 
 	var user User
 	if err := db.Where("username = ?", request.Username).First(&user).Error; err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": "Invalid username or password"})
+		c.JSON(http.StatusOK, gin.H{"error": "Username does not exist"})
 		return
 	}
 
 	if !CheckPassword(request.Password, user.Password) {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Username and password do not match"})
 		return
 	}
 

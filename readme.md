@@ -32,7 +32,11 @@
 }
 或
 {
-    "error": "Invalid username or password"  // 用户名或密码错误
+    "error": "Username not exist"  // 用户名不存在
+}
+或
+{
+    "error": "Username and password not match"  // 用户名和密码不匹配
 }
 或
 {
