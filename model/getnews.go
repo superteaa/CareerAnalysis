@@ -13,6 +13,7 @@ import (
 type New struct {
 	ID       uint `gorm:"primaryKey"`
 	Title    string
+	Intro    string
 	Body     string
 	Date     string
 	Icon_url string
@@ -37,6 +38,7 @@ func GetNewList(c *gin.Context) {
 		newMap := map[string]interface{}{
 			"news_id": new.ID,
 			"title":   new.Title,
+			"intro":   new.Intro,
 			// "Body":  new.Body,
 			"date":     new.Date,
 			"icon_url": new.Icon_url,
@@ -62,6 +64,7 @@ func GetNews(c *gin.Context) {
 	result := map[string]interface{}{
 		"news_id":  news.ID,
 		"title":    news.Title,
+		"intro":    news.Intro,
 		"body":     news.Body,
 		"date":     news.Date,
 		"icon_url": news.Icon_url,

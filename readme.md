@@ -326,12 +326,14 @@ GET /captcha/abc123
     {
       "news_id": 123,
 	  "title": "news1",
+      "intro": "震惊。。。",
 	  "date": "17561688", //时间戳
 	  "icon_url": "https://www.google.com",
     }
     {
       "news_id": 12,
 	  "title": "news2",
+      "intro": "简介简洁",
 	  "date": "17561888", //时间戳
 	  "icon_url": "https://www.microsoft.com",
     }
