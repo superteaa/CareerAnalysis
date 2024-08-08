@@ -55,9 +55,10 @@ func GetMajorList(c *gin.Context) {
 	var result []map[string]interface{}
 	for _, major := range majors {
 		majorListMap := map[string]interface{}{
-			"major_id":   major.ID,
-			"major_type": MAJOR_TYPE_MAP[major.Type],
-			"major_name": MAJOR_NAME_MAP[major.Major_no],
+			"major_id":      major.ID,
+			"major_type":    MAJOR_TYPE_MAP[major.Type],
+			"major_type_id": major.Type,
+			"major_name":    MAJOR_NAME_MAP[major.Major_no],
 		}
 		result = append(result, majorListMap)
 	}

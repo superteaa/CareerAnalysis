@@ -367,7 +367,7 @@ GET /news/get-list
 ### 参数
 **请求头**： `Authorization: Bearer <token>`
   - 用于用户鉴权的 JWT token
-  
+
 **请求体**：`news_id`
   - 在获取新闻列表时，对应新闻的id
 
@@ -417,9 +417,10 @@ GET /news/get-detail?news_id=12
 
 #### **响应**
 - **状态码**:
+  
   - `200 OK`: 请求成功，专业列表包含在响应体中返回。
   - `500 Internal Server Error`: 服务器内部发生错误。
-
+  
 - **响应体**:
 
   - **成功响应示例** (`200 OK`):
@@ -428,16 +429,18 @@ GET /news/get-detail?news_id=12
       {
         "major_id": 1,
         "major_type": "信息类",
+        "major_type_id": 1,  // 专业分类，0-工程类，1-信息类，2-理学类
         "major_name": "计算机科学与技术"
       },
       {
         "major_id": 2,
         "major_type": "工程类",
+        "major_type_id": 0,  // 专业分类，0-工程类，1-信息类，2-理学类
         "major_name": "通信工程"
       }
     }
     ```
-
+    
   - **错误响应示例** (`500 Internal Server Error`):
     ```json
     {
