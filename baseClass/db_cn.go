@@ -25,6 +25,13 @@ type Config struct {
 		Password string `json:"password"`
 		DB       int    `json:"db"`
 	} `json:"redis"`
+	SSH struct {
+		User       string `json:"user"`
+		Host       string `json:"host"`
+		Port       string `json:"port"`
+		PrivateKey string `json:"private_key"`
+	} `json:"ssh"`
+	UseSSH bool `json:"use_ssh"` // 区分是否使用 SSH 隧道
 }
 
 // InitDB 初始化MySQL数据库连接
