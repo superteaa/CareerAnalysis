@@ -61,6 +61,10 @@ func main() {
 		{
 			dataAnalys_r.GET("/get-list")
 		}
+		major_r := authorized.Group("/major")
+		{
+			major_r.GET("/get-list", model.GetMajorList)
+		}
 	}
 	// r.POST("/hello", func(c *gin.Context) {
 	// 	if err := baseClass.ValidateJWT(c); err == nil {

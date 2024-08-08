@@ -404,6 +404,46 @@ GET /news/get-list
 GET /news/get-detail?news_id=12
 ```
 
+## 获取专业列表
+![alt text](asset/image.png)
+#### **接口信息**
+- **URL**: `/major/get-list`
+- **请求方式**: `GET`
+- **描述**: 获取专业列表，包括专业的ID、分类和名称。
+
+#### **请求**
+**请求头**： `Authorization: Bearer <token>`
+  - 用于用户鉴权的 JWT token
+
+#### **响应**
+- **状态码**:
+  - `200 OK`: 请求成功，专业列表包含在响应体中返回。
+  - `500 Internal Server Error`: 服务器内部发生错误。
+
+- **响应体**:
+
+  - **成功响应示例** (`200 OK`):
+    ```json
+    {
+      {
+        "major_id": 1,
+        "major_type": "信息类",
+        "major_name": "计算机科学与技术"
+      },
+      {
+        "major_id": 2,
+        "major_type": "工程类",
+        "major_name": "通信工程"
+      }
+    }
+    ```
+
+  - **错误响应示例** (`500 Internal Server Error`):
+    ```json
+    {
+      "error": "服务器内部错误"
+    }
+    ```
 
 
 ---
