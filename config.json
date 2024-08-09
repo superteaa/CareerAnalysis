@@ -4,14 +4,21 @@
     },
     "mysql": {
         "username": "root",
-        "password": "123456",
+        "password": "klzknb666",
         "host": "127.0.0.1",
         "port": "3306",
         "dbname": "careeranalysis"
     },
     "redis": {
         "addr": "localhost:6379",
-        "password": "",
+        "password": "Tencent6666",
         "db": 0
-    }
+    },
+    "ssh": {
+        "user": "root",
+        "host": "175.178.24.103",
+        "port": "22",
+        "private_key": "175.178.24.103_id_ed25519"
+    },
+    "use_ssh": true
 }

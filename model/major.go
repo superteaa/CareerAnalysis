@@ -41,8 +41,8 @@ func GetMajorList(c *gin.Context) {
 
 	// 初始化数据库和Redis连接
 	db := baseClass.InitDB()
-	rdb := baseClass.InitRedis()
-	defer rdb.Close()
+	// rdb := baseClass.InitRedis()
+	// defer rdb.Close()
 
 	var majors []Major
 	db_result := db.Find(&majors)
