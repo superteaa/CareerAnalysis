@@ -462,6 +462,84 @@ GET /news/get-detail?news_id=12
 
 
 ---
+## 获取详细专业信息
+
+### 请求
+
+- **方法**：`GET`
+- **URL**：`/major/get-detail`
+
+### 描述
+
+此接口用于获取专业详细信息，包括评价等。
+
+### 参数
+
+**请求头**： `Authorization: Bearer <token>`
+
+  - 用于用户鉴权的 JWT token
+
+**请求体**：`major_id`
+
+  - 在获取专业列表时，返回的major_id
+
+
+### 响应
+
+- **状态码**：
+
+  - `200 OK`：成功返回专业信息
+  - `500 Internal Server Error`：查询数据库失败
+
+- **响应体**：
+
+  - **成功**：返回专业信息。
+
+    ```json
+    {
+        "commen_list": [
+            {
+                "body": "经历了今年的秋招，感觉目前通信行业确实陷入了周期性的寒冬，反而计算机相关的行业蓬勃发展，作为一个已经入坑的通信人只能期待5G能带给我们一点红利了。",
+                "comment_id": 1,
+                "star": 3,
+                "title": "周期性的寒冬",
+                "user": "精神孟家人"
+            },
+            {
+                "body": "主要是数电、模电、高频电子线路、信号与系统、数字信号处理、嵌入式开发，单片机等。再往前就是微电子、半导体、集成电路。现在没什么纯硬件，都是软件驱动硬件，搞软硬结合。所以说，硬件专业=硬件+软件。",
+                "comment_id": 2,
+                "star": 2,
+                "title": "搞电子",
+                "user": "zzz"
+            }
+        ],
+        "major_info": {
+            "intro": "通信工程，英文名Communication Engineering，是电子工程的一个重要分支，也是电子信息类 子专业，更是一门重要的基础学科。",
+            "major_id": 1,
+            "name": "通信工程",
+            "pic_url": "https://jf-open-prod-1301446188.cos.ap-guangzhou.myqcloud.com/media/S/23/0318/De58KONES8-WEVdYzFvu5jJS.jpg"
+        }
+    }
+    ```
+
+  - **失败**：
+
+    ```json
+    {
+      "error": "查询数据库失败" //具体错误信息，如“major_id不能为空”，“major_id不能为空”
+    }
+    ```
+
+### 示例
+
+#### 请求示例
+
+```
+GET /major/get-detail?major_id=1
+```
+
+# 
+
 <br>
 <br>
 

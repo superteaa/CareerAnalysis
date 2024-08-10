@@ -64,6 +64,7 @@ func main() {
 		major_r := authorized.Group("/major")
 		{
 			major_r.GET("/get-list", model.GetMajorList)
+			major_r.GET("/get-detail", model.GetMajorDetail)
 		}
 	}
 	// r.POST("/hello", func(c *gin.Context) {
