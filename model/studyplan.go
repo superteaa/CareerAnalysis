@@ -8,13 +8,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Skill 模型
+// Study 模型
 type Study struct {
 	// ID         uint `gorm:"primaryKey"`
-	UserID     uint `gorm:"column:user_id"`
-	Subject    string
-	Spend_Time uint
-	// Date       string
+	UserID     int    `gorm:"column:user_id"`
+	PlanName   string `gorm:"column:plan_name"`
+	SubjectID  int    `gorm:"column:subject_id"`
+	Spend_Time int
+	AddTime    int
+}
+
+func (Study) TableName() string {
+	return "study_plans"
+}
+
+func AddPlan(c *gin.Context) {
+
 }
 
 func GetStudyList(c *gin.Context) {
@@ -33,11 +42,11 @@ func GetStudyList(c *gin.Context) {
 
 	db.Where("user_id = ?", userID).Find(&skills)
 
-	var sum_time uint
+	var sum_time int
 	for _, v := range skills {
 		sum_time = sum_time + v.Spend_Time
 		subject_info := map[string]interface{}{
-			"subject_name":  v.Subject,
+			"subject_name":  v.SubjectID,
 			"subject_spend": v.Spend_Time,
 		}
 		subjects_info = append(subjects_info, subject_info)
