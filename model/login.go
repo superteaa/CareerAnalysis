@@ -10,7 +10,7 @@ import (
 
 // User 模型
 type User struct {
-	ID       uint   `gorm:"primaryKey"`
+	ID       int    `gorm:"primaryKey"`
 	Username string `gorm:"uniqueIndex"`
 	Password string
 	Email    string

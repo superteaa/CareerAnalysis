@@ -232,42 +232,51 @@ GET /captcha/abc123
 
 ---
 
-# 技能树（没做好）
+# 学习记录
 
-## GetStudyList API 接口文档
+## AddPlan API
 
 ### **接口描述**
-`GetStudyList` 接口用于获取指定用户的技能列表，并返回每个技能的花费时间及总花费时间的汇总信息。
+`AddPlan` 接口用于添加用户学习记录。
+
+![alt text](asset/\image-20240811165753658.png))
 
 ### **请求 URL**
-`GET /study/get-list`
-
-
+`POST /study/add-plan`
 
 ### **请求头**
-- `Authorization: Bearer <token>`
+- `Authorization: <token>`
+  
   - 用于用户鉴权的 JWT token
+  
+    
 
-### **请求参数**
+### <span id="subject_map">科目表（待完善）</span>
 
-| 参数名称 | 类型 | 是否必填 | 说明              |
-| -------- | ---- | -------- | ----------------- |
-| 暂无   |  |        | |
+SUBJECT_MAP = map[int]string{
 
-### **响应参数**
+  1: "Java",
 
-| 参数名称       | 类型   | 说明                                           |
-| -------------- | ------ | ---------------------------------------------- |
-| subjects_info  | array  | 包含每个技能的信息，详见下方 `subject_info` 结构 |
-| sum_time       | uint   | 用户所有技能花费的总时间                         |
-<br>
+  2: "C语言",
 
-- `subject_info` 结构：
+  3: "Python",
 
-| 参数名称        | 类型   | 说明                    |
-| --------------- | ------ | ----------------------- |
-| subject_name    | string | 技能的名称              |
-| subject_spend   | uint   | 在该技能上花费的时间    |
+  4: "C++",
+
+}
+
+### **JSON请求格式**
+
+```json
+{
+    "subject_id": 2, // 学习课目的id，前端需要同步建一个科目表MAP，必填
+    "study_time": 17673868, // 用户所填入的日期，必填
+    "spend_time": 1, // 学习时长，以小时为单位，必填
+    "add_time": 17673770 // 用户点击添加的时间，必填
+}
+```
+
+[科目表MAP](#subject_map)
 
 ### **响应示例**
 
@@ -275,30 +284,82 @@ GET /captcha/abc123
 
 ```json
 {
-  "subjects_info": [
-    {
-      "subject_name": "Golang",
-      "subject_spend": 120
-    },
-    {
-      "subject_name": "mysql",
-      "subject_spend": 80
-    }
-  ],
-  "sum_time": 200
+  "msg":"success"
+}
+```
+
+- **错误响应**
+
+```json
+{
+  "error": "参数格式错误"
 }
 ```
 
 
 
-### **错误码**
+## GetStudyData API
 
-| 错误码 | 描述                 |
-| ------ | -------------------- |
-| 200    | 用户不存在或无数据   |
-| 500    | 内部服务器错误       |
-<br>
-<br>
+### **接口描述**
+
+`GetStudyData` 接口获取用户学习数据。
+
+![alt text](asset/\微信图片_20240811171514.png))
+
+### **请求 URL**
+
+`GET /study/add-plan`
+
+
+
+### **请求头**
+
+- `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+    
+
+### **请求参数**
+
+```json
+	无
+```
+
+[科目表MAP](#subject_map)
+
+### **响应示例**
+
+- **成功响应**
+
+```json
+{
+    "subjects_info": [
+        {
+            "subject_id": 1,
+            "subject_name": "Java",
+            "subject_spend": 3  // 在该技能上的学习时间
+        },
+        {
+            "subject_id": 2,
+            "subject_name": "C语言",
+            "subject_spend": 3
+        }
+    ],
+    "sum_time": 6 // 总学习时长
+}
+```
+
+- **错误响应**
+
+```json
+{
+  "error": "服务器内部错误"
+}
+```
+
+
+
 ---
 
 # 新闻相关
@@ -315,7 +376,8 @@ GET /captcha/abc123
 此接口用于获取新闻列表，无详细新闻内容，未做分页等处理。
 
 ### 参数
-**请求头**: `Authorization: Bearer <token>`
+**请求头**: `Authorization: <token>`
+
   - 用于用户鉴权的 JWT token
 
 
@@ -370,7 +432,8 @@ GET /news/get-list
 此接口用于获取新闻详细信息。
 
 ### 参数
-**请求头**： `Authorization: Bearer <token>`
+**请求头**： `Authorization: <token>`
+
   - 用于用户鉴权的 JWT token
 
 **请求体**：`news_id`
@@ -421,7 +484,7 @@ GET /news/get-detail?news_id=12
 ### **请求**
 #### **请求头**：
 
- `Authorization: Bearer <token>`
+ `Authorization: <token>`
 
   - 用于用户鉴权的 JWT token
 
@@ -475,7 +538,7 @@ GET /news/get-detail?news_id=12
 
 ### 参数
 
-**请求头**： `Authorization: Bearer <token>`
+**请求头**： `Authorization: <token>`
 
   - 用于用户鉴权的 JWT token
 

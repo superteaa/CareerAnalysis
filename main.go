@@ -50,7 +50,8 @@ func main() {
 	{
 		study_r := authorized.Group("/study")
 		{
-			study_r.GET("/get-list", model.GetStudyList)
+			study_r.POST("/add-plan", model.AddPlan)
+			study_r.GET("/get-data", model.GetStudyData)
 		}
 		new_r := authorized.Group("/news")
 		{

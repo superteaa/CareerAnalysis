@@ -12,12 +12,12 @@ var jwtKey = []byte("goodAndgood")
 
 // Claims 结构体，用于生成JWT
 type Claims struct {
-	UserID uint `json:"user_id"`
+	UserID int `json:"user_id"`
 	jwt.StandardClaims
 }
 
 // GenerateJWT 生成JWT
-func GenerateJWT(userID uint) (string, error) {
+func GenerateJWT(userID int) (string, error) {
 	expirationTime := time.Now().Add(99999999 * time.Minute)
 	claims := &Claims{
 		UserID: userID,
@@ -53,6 +53,6 @@ func ValidateJWT() gin.HandlerFunc {
 
 		c.Set("userID", claims.UserID)
 		c.Next()
-		return
+		// return
 	}
 }
