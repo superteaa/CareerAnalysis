@@ -334,19 +334,32 @@ SUBJECT_MAP = map[int]string{
 
 ```json
 {
+    "average_time": "0.86",
     "subjects_info": [
         {
+            "data": [
+                0,0,0,0,0,0,3
+            ],
             "subject_id": 1,
-            "subject_name": "Java",
-            "subject_spend": 3  // 在该技能上的学习时间
+            "subject_name": "Java"
         },
         {
+            "data": [
+                0,0,0,0,0,0,3
+            ],
             "subject_id": 2,
-            "subject_name": "C语言",
-            "subject_spend": 3
+            "subject_name": "C语言"
         }
     ],
-    "sum_time": 6 // 总学习时长
+    "xAxis": [
+        "8.5",
+        "8.6",
+        "8.7",
+        "8.8",
+        "8.9",
+        "8.10",
+        "8.11"
+    ]
 }
 ```
 

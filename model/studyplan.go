@@ -2,8 +2,10 @@ package model
 
 import (
 	"CareerAnalysis/baseClass"
+	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -89,33 +91,73 @@ func GetStudyData(c *gin.Context) {
 	}
 
 	var datas []Study
+	var xAxis []string
+	date_info := make(map[string]interface{})
+	subject_info := make(map[int]map[string]int)
 
-	var subjects_info []map[string]interface{}
+	// 获取当前时间并生成七天内的日期列表
+	now := time.Now()
+	for i := 6; i >= 0; i-- {
+		date := now.AddDate(0, 0, -i)
+		dateStr := fmt.Sprintf("%d.%d", date.Month(), date.Day())
+		xAxis = append(xAxis, dateStr)
+		date_info[dateStr] = 1
+	}
 
-	db.Where("user_id = ?", userID).Find(&datas)
+	// var date_info map[string]interface{}
+
+	oldTime := now.AddDate(0, 0, -7)
+	fiveAgo := time.Date(oldTime.Year(), oldTime.Month(), oldTime.Day(), 0, 0, 0, 0, oldTime.Location()).Unix()
+	db.Where("user_id = ? and study_time >= ?", userID, fiveAgo).Find(&datas)
 
 	sum_time := 0
-	subjectSpendMap := make(map[int]int) // 用于存储每个 SubjectID 的 SpendTime 之和
 
 	// 计算所有 SubjectID 相同的 SpendTime 之和
 	for _, v := range datas {
-		sum_time += v.Spend_Time
-		subjectSpendMap[v.SubjectID] += v.Spend_Time
+		// 将 StudyTime 转换为 time.Time 类型
+
+		studyTime := int64(v.StudyTime)
+		t := time.Unix(studyTime, 0)
+		dateStr := fmt.Sprintf("%d.%d", t.Month(), t.Day())
+
+		// 检查日期是否在 xAxis 列表中
+		if _, exists := date_info[dateStr]; exists {
+			// date_info[dateStr][v.SubjectID] += v.Spend_Time
+			sum_time += v.Spend_Time
+			if subject_info[v.SubjectID] == nil {
+				subject_info[v.SubjectID] = make(map[string]int)
+			}
+			subject_info[v.SubjectID][dateStr] += v.Spend_Time
+
+		}
 	}
 
-	// 构建 subjects_info 列表
-	for subjectID, spendTime := range subjectSpendMap {
-		subject_info := map[string]interface{}{
-			"subject_name":  SUBJECT_MAP[subjectID],
-			"subject_id":    subjectID,
-			"subject_spend": spendTime,
+	subjects_info := []map[string]interface{}{}
+	for subjectID, v := range subject_info {
+		dataArr := make([]int, 0, len(xAxis))
+		for _, dateStr := range xAxis {
+			if spendTime, exists := v[dateStr]; exists {
+				dataArr = append(dataArr, spendTime)
+			} else {
+				dataArr = append(dataArr, 0) // 若当天无数据，则填入0
+			}
 		}
-		subjects_info = append(subjects_info, subject_info)
+
+		singleSubject := map[string]interface{}{
+			"subject_id":   subjectID,
+			"subject_name": SUBJECT_MAP[subjectID],
+			"data":         dataArr,
+		}
+
+		subjects_info = append(subjects_info, singleSubject)
 	}
+
+	averageTime := fmt.Sprintf("%.2f", float64(sum_time)/7)
 
 	result := map[string]interface{}{
 		"subjects_info": subjects_info,
-		"sum_time":      sum_time,
+		"average_time":  averageTime,
+		"xAxis":         xAxis,
 	}
 
 	c.JSON(http.StatusOK, result)
