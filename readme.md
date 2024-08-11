@@ -239,7 +239,7 @@ GET /captcha/abc123
 ### **接口描述**
 `AddPlan` 接口用于添加用户学习记录。
 
-![alt text](asset/\image-20240811165753658.png))
+![alt text](asset/\image-20240811165753658.png)
 
 ### **请求 URL**
 `POST /study/add-plan`
@@ -304,7 +304,7 @@ SUBJECT_MAP = map[int]string{
 
 `GetStudyData` 接口获取用户学习数据。
 
-![alt text](asset/\微信图片_20240811171514.png))
+![alt text](asset/\微信图片_20240811171514.png)
 
 ### **请求 URL**
 
