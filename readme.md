@@ -334,14 +334,14 @@ SUBJECT_MAP = map[int]string{
 
 ```json
 {
-    "average_time": "0.86",
+    "average_time": "0.86",  // 本周平均学习时长
     "subjects_info": [
         {
             "data": [
                 0,0,0,0,0,0,3
-            ],
-            "subject_id": 1,
-            "subject_name": "Java"
+            ],  // 该科目七天内的学习时长
+            "subject_id": 1,  // 科目ID
+            "subject_name": "Java"  // 科目名称
         },
         {
             "data": [
@@ -359,7 +359,7 @@ SUBJECT_MAP = map[int]string{
         "8.9",
         "8.10",
         "8.11"
-    ]
+    ]  // 前七天的日期
 }
 ```
 
