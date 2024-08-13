@@ -265,6 +265,26 @@ SUBJECT_MAP = map[int]string{
 
 }
 
+
+
+### <span id="tag_map">Tag表</span>
+
+STUDY_TAG_MAP = map[int]string{
+
+  1: "有问题",
+
+  2: "新知识",
+
+  3: "待总结",
+
+  4: "没看懂",
+
+  5: "有点问题",
+
+  6: "其他",
+
+}
+
 ### **JSON请求格式**
 
 ```json
@@ -273,12 +293,15 @@ SUBJECT_MAP = map[int]string{
     "subject_id": 2, // 学习课目的id，前端需要同步建一个科目表MAP，必填
     "study_time": 17673868, // 用户所填入的日期，必填
     "spend_time": 1.2, // 学习时长，以小时为单位，必填
-    "add_time": 17673770, // 用户点击添加的时间，必填
+    "addtime": 17673770, // 用户点击添加的时间，必填
     "note": "在b站上看的" // 备注，选填
+    "tags": [1,2,3] // tag标签，可看标签表，选填
 }
 ```
 
 [科目表MAP](#subject_map)
+
+[标签表MAP](#tag_map)
 
 ### **响应示例**
 
@@ -370,6 +393,163 @@ SUBJECT_MAP = map[int]string{
 ```json
 {
   "error": "服务器内部错误"
+}
+```
+
+
+
+## GetPlanList API
+
+### **接口描述**
+
+`GetPlanList` 接口获取用户学习记录列表。
+
+### **请求 URL**
+
+`GET /study/get-plan-list`
+
+### **请求头**
+
+- `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+    
+
+### **请求参数**
+
+```json
+	无
+```
+
+[科目表MAP](#subject_map)
+
+[标签表MAP](#tag_map)
+
+### **响应示例**
+
+- **成功响应**
+
+```json
+{
+    "2024-8-11": [
+        {
+            "plan_id": 27,
+            "spend_time": 5.8,
+            "study_time": 1723372795,
+            "subject": "C语言",
+            "subject_id": 2,
+            "tags": [
+                7,
+                8,
+                9
+            ]
+        },
+        {
+            "plan_id": 26,
+            "spend_time": 5.8,
+            "study_time": 1723372795,
+            "subject": "C语言",
+            "subject_id": 2,
+            "tags": [
+                7,
+                8,
+                9
+            ]
+        },
+        {
+            "plan_id": 25,
+            "spend_time": 5.8,
+            "study_time": 1723372795,
+            "subject": "C语言",
+            "subject_id": 2,
+            "tags": [
+                1,
+                2,
+                3
+            ]
+        },
+        {
+            "plan_id": 24,
+            "spend_time": 5.8,
+            "study_time": 1723372795,
+            "subject": "C语言",
+            "subject_id": 2,
+            "tags": [
+                0
+            ]
+        },
+        {
+            "plan_id": 23,
+            "spend_time": 5.8,
+            "study_time": 1723372795,
+            "subject": "C语言",
+            "subject_id": 2,
+            "tags": [
+                0
+            ]
+        },
+        {
+            "plan_id": 22,
+            "spend_time": 5.8,
+            "study_time": 1723372795,
+            "subject": "C语言",
+            "subject_id": 2,
+            "tags": [
+                0
+            ]
+        }
+    ],
+    "2024-8-13": [
+        {
+            "plan_id": 5,
+            "spend_time": 1,
+            "study_time": 1723478400,
+            "subject": "C语言",
+            "subject_id": 2,
+            "tags": [
+                0
+            ]
+        },
+        {
+            "plan_id": 4,
+            "spend_time": 1.2,
+            "study_time": 1723478400,
+            "subject": "Java",
+            "subject_id": 1,
+            "tags": [
+                0
+            ]
+        },
+        {
+            "plan_id": 3,
+            "spend_time": 0,
+            "study_time": 1723478400,
+            "subject": "Java",
+            "subject_id": 1,
+            "tags": [
+                0
+            ]
+        },
+        {
+            "plan_id": 1,
+            "spend_time": 1,
+            "study_time": 1723478400,
+            "subject": "Java",
+            "subject_id": 1,
+            "tags": [
+                0
+            ]
+        }
+    ]
+}
+```
+
+- **错误响应**
+
+```json
+{
+  "error": "错误信息" 
 }
 ```
 
