@@ -272,7 +272,7 @@ SUBJECT_MAP = map[int]string{
     "plan_name": "看了两小时黑马程序员", // 名称，选填
     "subject_id": 2, // 学习课目的id，前端需要同步建一个科目表MAP，必填
     "study_time": 17673868, // 用户所填入的日期，必填
-    "spend_time": 1, // 学习时长，以小时为单位，必填
+    "spend_time": 1.2, // 学习时长，以小时为单位，必填
     "add_time": 17673770, // 用户点击添加的时间，必填
     "note": "在b站上看的" // 备注，选填
 }
@@ -310,7 +310,7 @@ SUBJECT_MAP = map[int]string{
 
 ### **请求 URL**
 
-`GET /study/add-plan`
+`GET /study/get-data`
 
 
 
@@ -340,7 +340,7 @@ SUBJECT_MAP = map[int]string{
     "subjects_info": [
         {
             "data": [
-                0,0,0,0,0,0,3
+                0,0,0,0,0,0,3.7
             ],  // 该科目七天内的学习时长
             "subject_id": 1,  // 科目ID
             "subject_name": "Java"  // 科目名称
