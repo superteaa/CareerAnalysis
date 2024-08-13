@@ -135,13 +135,13 @@ func GetStudyData(c *gin.Context) {
 
 	subjects_info := []map[string]interface{}{}
 	for subjectID, v := range subject_info {
-		dataArr := make([]string, 0, len(xAxis))
+		dataArr := make([]float64, 0, len(xAxis))
 		for _, dateStr := range xAxis {
 			if spendTime, exists := v[dateStr]; exists {
-				dataDeal := fmt.Sprintf("%.1f", spendTime)
-				dataArr = append(dataArr, dataDeal)
+
+				dataArr = append(dataArr, spendTime)
 			} else {
-				dataArr = append(dataArr, "0.0") // 若当天无数据，则填入0
+				dataArr = append(dataArr, 0.0) // 若当天无数据，则填入0
 			}
 		}
 
