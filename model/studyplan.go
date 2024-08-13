@@ -13,13 +13,13 @@ import (
 // Study 模型
 type Study struct {
 	// ID         uint `gorm:"primaryKey"`
-	UserID     int    `gorm:"column:user_id"`
-	PlanName   string `gorm:"column:plan_name" json:"plan_name"`
-	SubjectID  int    `gorm:"column:subject_id" json:"subject_id"`
-	StudyTime  int    `gorm:"column:study_time" json:"study_time"` //学习日期
-	Spend_Time int    `json:"spend_time"`                          // 学习时长
-	AddTime    int    `gorm:"column:addtime" json:"add_time"`      // 用户操作的时间
-	Note       string `json:"note"`                                // 备注
+	UserID     int     `gorm:"column:user_id"`
+	PlanName   string  `gorm:"column:plan_name" json:"plan_name"`
+	SubjectID  int     `gorm:"column:subject_id" json:"subject_id"`
+	StudyTime  int     `gorm:"column:study_time" json:"study_time"` //学习日期
+	Spend_Time float64 `json:"spend_time"`                          // 学习时长
+	AddTime    int     `gorm:"column:addtime" json:"add_time"`      // 用户操作的时间
+	Note       string  `json:"note"`                                // 备注
 }
 
 var SUBJECT_MAP = map[int]string{
@@ -93,7 +93,7 @@ func GetStudyData(c *gin.Context) {
 	var datas []Study
 	var xAxis []string
 	date_info := make(map[string]interface{})
-	subject_info := make(map[int]map[string]int)
+	subject_info := make(map[int]map[string]float64)
 
 	// 获取当前时间并生成七天内的日期列表
 	now := time.Now()
@@ -110,7 +110,8 @@ func GetStudyData(c *gin.Context) {
 	fiveAgo := time.Date(oldTime.Year(), oldTime.Month(), oldTime.Day(), 0, 0, 0, 0, oldTime.Location()).Unix()
 	db.Where("user_id = ? and study_time >= ?", userID, fiveAgo).Find(&datas)
 
-	sum_time := 0
+	var sum_time float64
+	sum_time = 0
 
 	// 计算所有 SubjectID 相同的 SpendTime 之和
 	for _, v := range datas {
@@ -125,7 +126,7 @@ func GetStudyData(c *gin.Context) {
 			// date_info[dateStr][v.SubjectID] += v.Spend_Time
 			sum_time += v.Spend_Time
 			if subject_info[v.SubjectID] == nil {
-				subject_info[v.SubjectID] = make(map[string]int)
+				subject_info[v.SubjectID] = make(map[string]float64)
 			}
 			subject_info[v.SubjectID][dateStr] += v.Spend_Time
 
@@ -134,12 +135,13 @@ func GetStudyData(c *gin.Context) {
 
 	subjects_info := []map[string]interface{}{}
 	for subjectID, v := range subject_info {
-		dataArr := make([]int, 0, len(xAxis))
+		dataArr := make([]string, 0, len(xAxis))
 		for _, dateStr := range xAxis {
 			if spendTime, exists := v[dateStr]; exists {
-				dataArr = append(dataArr, spendTime)
+				dataDeal := fmt.Sprintf("%.1f", spendTime)
+				dataArr = append(dataArr, dataDeal)
 			} else {
-				dataArr = append(dataArr, 0) // 若当天无数据，则填入0
+				dataArr = append(dataArr, "0.0") // 若当天无数据，则填入0
 			}
 		}
 
@@ -152,7 +154,7 @@ func GetStudyData(c *gin.Context) {
 		subjects_info = append(subjects_info, singleSubject)
 	}
 
-	averageTime := fmt.Sprintf("%.2f", float64(sum_time)/7)
+	averageTime := fmt.Sprintf("%.2f", sum_time/7)
 
 	result := map[string]interface{}{
 		"subjects_info": subjects_info,
