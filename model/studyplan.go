@@ -264,12 +264,29 @@ func GetPlanList(c *gin.Context) {
 		return
 	}
 
+	page := c.Query("page")
+	pagesize := c.Query("pagesize")
+	var pageInt int
+	if page == "" {
+		page = "1"
+		pageInt, _ = strconv.Atoi(page)
+	} else {
+		pageInt, _ = strconv.Atoi(page)
+	}
+	var pagesizeInt int
+	if pagesize == "" {
+		pagesize = "10"
+		pagesizeInt, _ = strconv.Atoi(pagesize)
+	} else {
+		pagesizeInt, _ = strconv.Atoi(pagesize)
+	}
+
 	var plan_list []Study
 	// now := time.Now()
 	// timestamp := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Unix()
 	db := baseClass.InitDB()
 
-	db.Select("id, subject_id, spend_time, study_time, tags").Where("user_id = ?", userID).Order("study_time DESC").Order("addtime DESC").Limit(10).Find(&plan_list)
+	db.Select("id, subject_id, spend_time, study_time, tags").Where("user_id = ?", userID).Order("study_time DESC").Order("addtime DESC").Limit(pagesizeInt).Offset((pageInt - 1) * pagesizeInt).Find(&plan_list)
 
 	result := make(map[string][]map[string]interface{})
 
