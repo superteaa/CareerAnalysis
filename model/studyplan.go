@@ -253,7 +253,7 @@ func GetStudyData(c *gin.Context) {
 func GetPlanList(c *gin.Context) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Println("发生异常:", r)
+			log.Println("GetPlanList发生异常:", r)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误"})
 		}
 	}()
@@ -323,4 +323,61 @@ func GetPlanList(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, result)
 
+}
+
+func GetPlanDetail(c *gin.Context) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("GetPlanDetail发生异常:", r)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误"})
+		}
+	}()
+
+	userID, exists := c.Get("userID")
+	if !exists {
+		log.Println("GetTodayPlan:", "鉴权失败，用户不存在")
+		c.JSON(http.StatusOK, gin.H{"error": "用户不存在"})
+		return
+	}
+
+	plan_id := c.Query("plan_id")
+	var planDetail Study
+	db := baseClass.InitDB()
+	if db_result := db.Where("id = ?", plan_id).First(&planDetail); db_result.Error != nil {
+		log.Println("GetPlanDetail:", db_result.Error)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误"})
+		return
+	}
+
+	if planDetail.UserID != int(userID.(uint32)) {
+		log.Println("GetPlanDetail:", "用户无权限访问该数据, planDetail:", planDetail.UserID, "userID:", userID)
+		c.JSON(http.StatusOK, gin.H{"error": "用户无权限访问该数据"})
+		return
+	}
+
+	// 将字符串分割为切片
+	strSlice := strings.Split(planDetail.Tags, ",")
+
+	// 将切片中的字符串转换为整数切片
+	var intSlice []int
+
+	for _, str := range strSlice {
+		num, err := strconv.Atoi(str)
+		if err != nil {
+			log.Println("字符串转数组err：", err)
+		}
+		intSlice = append(intSlice, num)
+	}
+
+	result := map[string]interface{}{
+		"plan_id":    planDetail.ID,
+		"plan_name":  planDetail.PlanName,
+		"subject":    SUBJECT_MAP[planDetail.SubjectID],
+		"subject_id": planDetail.SubjectID,
+		"study_time": planDetail.StudyTime,
+		"spend_time": planDetail.Spend_Time,
+		"note":       planDetail.Note,
+		"tags":       intSlice,
+	}
+	c.JSON(http.StatusOK, result)
 }

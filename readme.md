@@ -560,6 +560,67 @@ STUDY_TAG_MAP = map[int]string{
 
 
 
+## GetPlanDetail API
+
+### **接口描述**
+
+`GetPlanDetail` 接口获取用户学习记录详细信息。
+
+### **请求 URL**
+
+`GET /study/get-plan-detail`
+
+### **请求头**
+
+- `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+    
+
+### **请求参数**
+
+```json
+`plan_id` - 记录的id
+```
+
+### 请求示例
+
+`GET /study/get-plan-list?plan_id=1`
+
+### **响应示例**
+
+[科目表MAP](#subject_map)
+
+[标签表MAP](#tag_map)
+
+- **成功响应**
+
+```json
+{
+    "note": "",
+    "plan_id": 17,
+    "plan_name": "",
+    "spend_time": 5.8,
+    "study_time": 1723372795,
+    "subject": "C语言",
+    "subject_id": 2,
+    "tags": [
+        0
+    ]
+}
+```
+
+- **错误响应**
+
+```json
+{
+  "error": "错误信息" 
+}
+```
+
+
+
 ---
 
 # 新闻相关
