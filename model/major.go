@@ -57,7 +57,7 @@ func GetMajorList(c *gin.Context) {
 	}()
 
 	// 初始化数据库和Redis连接
-	db := baseClass.InitDB()
+	db := baseClass.GetDB()
 	// rdb := baseClass.InitRedis()
 	// defer rdb.Close()
 
@@ -97,7 +97,7 @@ func GetMajorDetail(c *gin.Context) {
 		return
 	}
 
-	db := baseClass.InitDB()
+	db := baseClass.GetDB()
 	var major Major
 	var comments []Comment
 	db_result := db.First(&major, major_id)

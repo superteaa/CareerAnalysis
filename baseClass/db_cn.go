@@ -35,35 +35,38 @@ type Config struct {
 	UseSSH bool `json:"use_ssh"` // 区分是否使用 SSH 隧道
 }
 
+var db *gorm.DB
+
 // InitDB 初始化MySQL数据库连接
-func InitDB() *gorm.DB {
+func InitDB() {
 	data, err := os.ReadFile("config.json")
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
-		return nil
+		os.Exit(1)
 	}
 	var config Config
 	err = json.Unmarshal(data, &config)
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
-		return nil
+		os.Exit(1)
 	}
 
 	if !config.UseSSH {
 		dsn := config.MySQL.Username + ":" + config.MySQL.Password + "@tcp(" +
 			config.MySQL.Host + ":" + config.MySQL.Port + ")/" + config.MySQL.DBName +
 			"?charset=utf8mb4&parseTime=True&loc=Local"
-		db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 		if err != nil {
 			log.Fatal("Failed to connect to database:", err)
+			os.Exit(1)
 		}
-		return db
+
 	} else {
 		// 使用SSH隧道连接数据库
 		client := SSHConn()
 		if client == nil {
 
-			return nil
+			os.Exit(1)
 		}
 
 		// 定义符合 DialContextFunc 类型的拨号函数
@@ -80,14 +83,18 @@ func InitDB() *gorm.DB {
 		dsn := config.MySQL.Username + ":" + config.MySQL.Password + "@mysql+ssh(" +
 			config.MySQL.Host + ":" + config.MySQL.Port + ")/" + config.MySQL.DBName +
 			"?charset=utf8mb4&parseTime=True&loc=Local"
-		db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 		if err != nil {
 			log.Fatal("Failed to connect to database:", err)
+			os.Exit(1)
 		}
-		return db
 
 	}
 
+}
+
+func GetDB() *gorm.DB {
+	return db
 }
 
 // // InitRedis 初始化Redis连接

@@ -144,7 +144,7 @@ func AddPlan(c *gin.Context) {
 		}
 	}
 
-	db := baseClass.InitDB()
+	db := baseClass.GetDB()
 	db_result := db.Table("study_plans").Create(&data)
 
 	if db_result.Error != nil {
@@ -166,7 +166,7 @@ func GetStudyData(c *gin.Context) {
 		}
 	}()
 
-	db := baseClass.InitDB()
+	db := baseClass.GetDB()
 	userID, exists := c.Get("userID")
 
 	if !exists {
@@ -284,7 +284,7 @@ func GetPlanList(c *gin.Context) {
 	var plan_list []Study
 	// now := time.Now()
 	// timestamp := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Unix()
-	db := baseClass.InitDB()
+	db := baseClass.GetDB()
 
 	db.Select("id, subject_id, spend_time, study_time, tags").Where("user_id = ?", userID).Order("study_time DESC").Order("addtime DESC").Limit(pagesizeInt).Offset((pageInt - 1) * pagesizeInt).Find(&plan_list)
 
@@ -342,7 +342,64 @@ func GetPlanDetail(c *gin.Context) {
 
 	plan_id := c.Query("plan_id")
 	var planDetail Study
-	db := baseClass.InitDB()
+	db := baseClass.GetDB()
+	if db_result := db.Where("id = ?", plan_id).First(&planDetail); db_result.Error != nil {
+		log.Println("GetPlanDetail:", db_result.Error)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误"})
+		return
+	}
+
+	if planDetail.UserID != int(userID.(uint32)) {
+		log.Println("GetPlanDetail:", "用户无权限访问该数据, planDetail:", planDetail.UserID, "userID:", userID)
+		c.JSON(http.StatusOK, gin.H{"error": "用户无权限访问该数据"})
+		return
+	}
+
+	// 将字符串分割为切片
+	strSlice := strings.Split(planDetail.Tags, ",")
+
+	// 将切片中的字符串转换为整数切片
+	var intSlice []int
+
+	for _, str := range strSlice {
+		num, err := strconv.Atoi(str)
+		if err != nil {
+			log.Println("字符串转数组err：", err)
+		}
+		intSlice = append(intSlice, num)
+	}
+
+	result := map[string]interface{}{
+		"plan_id":    planDetail.ID,
+		"plan_name":  planDetail.PlanName,
+		"subject":    SUBJECT_MAP[planDetail.SubjectID],
+		"subject_id": planDetail.SubjectID,
+		"study_time": planDetail.StudyTime,
+		"spend_time": planDetail.Spend_Time,
+		"note":       planDetail.Note,
+		"tags":       intSlice,
+	}
+	c.JSON(http.StatusOK, result)
+}
+
+func ChangePlan(c *gin.Context) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("GetPlanDetail发生异常:", r)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误"})
+		}
+	}()
+
+	userID, exists := c.Get("userID")
+	if !exists {
+		log.Println("GetTodayPlan:", "鉴权失败，用户不存在")
+		c.JSON(http.StatusOK, gin.H{"error": "用户不存在"})
+		return
+	}
+
+	plan_id := c.Query("plan_id")
+	var planDetail Study
+	db := baseClass.GetDB()
 	if db_result := db.Where("id = ?", plan_id).First(&planDetail); db_result.Error != nil {
 		log.Println("GetPlanDetail:", db_result.Error)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误"})

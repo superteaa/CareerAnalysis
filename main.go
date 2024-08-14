@@ -40,6 +40,8 @@ func main() {
 
 	log.Println("应用程序启动")
 
+	baseClass.InitDB()
+
 	r := gin.Default()
 	r.POST("/login", model.Login)
 	r.POST("/signup", model.Signup)

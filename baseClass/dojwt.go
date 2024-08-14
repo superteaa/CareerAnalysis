@@ -41,7 +41,7 @@ func ValidateJWT() gin.HandlerFunc {
 			return
 		}
 
-		db := InitDB()
+		db := GetDB()
 		result := map[string]interface{}{
 			"id":       0,
 			"token":    "",

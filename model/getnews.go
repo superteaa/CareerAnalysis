@@ -21,7 +21,7 @@ type New struct {
 
 func GetNewList(c *gin.Context) {
 	// 初始化数据库和Redis连接
-	db := baseClass.InitDB()
+	db := baseClass.GetDB()
 	// rdb := baseClass.InitRedis()
 	// defer rdb.Close()
 
@@ -52,7 +52,7 @@ func GetNewList(c *gin.Context) {
 func GetNews(c *gin.Context) {
 	news_id := c.Query("news_id")
 	// 初始化数据库和Redis连接
-	db := baseClass.InitDB()
+	db := baseClass.GetDB()
 	var news New
 	db_result := db.Where("id = ?", news_id).First(&news)
 	if db_result.Error != nil {
