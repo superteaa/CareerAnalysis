@@ -419,14 +419,19 @@ STUDY_TAG_MAP = map[int]string{
 ### **请求参数**
 
 ```json
-	无
+`page` - 页码
+`pagesize` - 取几条信息
 ```
+
+### 请求示例
+
+`GET /study/get-plan-list?page=1&pagesize=10`
+
+### **响应示例**
 
 [科目表MAP](#subject_map)
 
 [标签表MAP](#tag_map)
-
-### **响应示例**
 
 - **成功响应**
 
