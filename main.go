@@ -56,6 +56,7 @@ func main() {
 			study_r.GET("/get-data", model.GetStudyData)
 			study_r.GET("/get-plan-list", model.GetPlanList)
 			study_r.GET("/get-plan-detail", model.GetPlanDetail)
+			study_r.POST("/change-plan", model.ChangePlan)
 		}
 		new_r := authorized.Group("/news")
 		{

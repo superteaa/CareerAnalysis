@@ -93,12 +93,6 @@ func AddPlan(c *gin.Context) {
 		return
 	}
 
-	_, ok = data["addtime"]
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
-		return
-	}
-
 	userID, exists := c.Get("userID")
 	if !exists {
 		log.Println("GetStudyList:", "鉴权失败，用户不存在")
@@ -385,56 +379,143 @@ func GetPlanDetail(c *gin.Context) {
 func ChangePlan(c *gin.Context) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Println("GetPlanDetail发生异常:", r)
+			log.Println("ChangePlan发生异常:", r)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误"})
 		}
 	}()
 
+	var data map[string]interface{}
+	if err := c.BindJSON(&data); err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
+		return
+	}
+
+	subject_id, ok := data["subject_id"]
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
+		return
+	}
+
+	_, ok = data["user_id"]
+	if ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
+		return
+	}
+
+	study_time, ok := data["study_time"]
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
+		return
+	}
+
+	spend_time, ok := data["spend_time"]
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
+		return
+	}
+
+	addtime, ok := data["addtime"]
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
+		return
+	}
+
+	plan_id, ok := data["plan_id"]
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
+		return
+	}
+
 	userID, exists := c.Get("userID")
 	if !exists {
-		log.Println("GetTodayPlan:", "鉴权失败，用户不存在")
+		log.Println("ChangePlan:", "鉴权失败，用户不存在")
 		c.JSON(http.StatusOK, gin.H{"error": "用户不存在"})
 		return
 	}
 
-	plan_id := c.Query("plan_id")
-	var planDetail Study
-	db := baseClass.GetDB()
-	if db_result := db.Where("id = ?", plan_id).First(&planDetail); db_result.Error != nil {
-		log.Println("GetPlanDetail:", db_result.Error)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误"})
-		return
+	tagsArr, ok := data["tags"].([]interface{})
+	if ok {
+		// tags 是一个 []interface{} 类型的数组
+		isIntArray := true
+
+		// 遍历数组元素，检查是否每个元素都是整数
+		for _, item := range tagsArr {
+			if _, ok := item.(float64); !ok {
+				isIntArray = false
+				log.Println(item)
+				break
+			}
+		}
+
+		if isIntArray {
+			// tags 是一个整型数组
+
+			// 将整数数组转换为字符串数组
+			var strSlice []string
+			for _, item := range tagsArr {
+				num := item.(float64)
+				strSlice = append(strSlice, strconv.FormatFloat(num, 'f', 0, 64))
+			}
+
+			// 使用逗号将字符串数组连接为一个字符串
+			arrayStr := strings.Join(strSlice, ",")
+			// arrayStr 现在包含了逗号分隔的整数数组字符串表示
+			data["tags"] = arrayStr
+		} else {
+			// tags 不是整型数组
+			log.Println("tags格式错误:")
+			c.JSON(http.StatusOK, gin.H{"error": "tags格式错误"})
+			return
+		}
 	}
 
+	var planDetail Study
+
+	db := baseClass.GetDB()
+	db_result := db.Table("study_plans").Where("id = ?", plan_id).First(&planDetail)
+
 	if planDetail.UserID != int(userID.(uint32)) {
-		log.Println("GetPlanDetail:", "用户无权限访问该数据, planDetail:", planDetail.UserID, "userID:", userID)
+		log.Println("ChangePlan:", "用户无权限访问该数据, planDetail:", planDetail.UserID, "userID:", userID)
 		c.JSON(http.StatusOK, gin.H{"error": "用户无权限访问该数据"})
 		return
 	}
 
-	// 将字符串分割为切片
-	strSlice := strings.Split(planDetail.Tags, ",")
+	// c.JSON(http.StatusOK, planDetail)
+	// return
 
-	// 将切片中的字符串转换为整数切片
-	var intSlice []int
-
-	for _, str := range strSlice {
-		num, err := strconv.Atoi(str)
-		if err != nil {
-			log.Println("字符串转数组err：", err)
-		}
-		intSlice = append(intSlice, num)
+	if db_result.Error != nil {
+		log.Println("ChangePlan数据库出错:", db_result.Error)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
+		return
 	}
 
-	result := map[string]interface{}{
-		"plan_id":    planDetail.ID,
-		"plan_name":  planDetail.PlanName,
-		"subject":    SUBJECT_MAP[planDetail.SubjectID],
-		"subject_id": planDetail.SubjectID,
-		"study_time": planDetail.StudyTime,
-		"spend_time": planDetail.Spend_Time,
-		"note":       planDetail.Note,
-		"tags":       intSlice,
+	if val, ok := data["plan_name"].(string); ok {
+		planDetail.PlanName = val
 	}
-	c.JSON(http.StatusOK, result)
+	log.Println("1")
+	planDetail.SubjectID = int(subject_id.(float64))
+	log.Println("2")
+	planDetail.StudyTime = int(study_time.(float64))
+
+	planDetail.Spend_Time = spend_time.(float64)
+
+	if val, ok := data["note"].(string); ok {
+		planDetail.Note = val
+	}
+	if val, ok := data["tags"].(string); ok {
+		planDetail.Tags = val
+	}
+	log.Println("3")
+	planDetail.AddTime = int(addtime.(float64))
+
+	db_result = db.Save(&planDetail)
+	if db_result.Error != nil {
+		log.Println("ChangePlan数据库出错:", db_result.Error)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"msg": "success"})
+	// if (data[])
 }

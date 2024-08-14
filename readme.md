@@ -621,6 +621,62 @@ STUDY_TAG_MAP = map[int]string{
 
 
 
+## ChangePlan API
+
+### **接口描述**
+
+`ChangePlan` 接口用于更改用户学习记录。
+
+### **请求 URL**
+
+`POST /study/change-plan`
+
+### **请求头**
+
+- `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+
+### **JSON请求格式**
+
+```json
+{
+    "plan_id": 2, //id，必填
+    "plan_name": "看了两小时黑马程序员", // 名称，选填
+    "subject_id": 2, // 学习课目的id，必填
+    "study_time": 17673868, // 用户所填入的日期，必填
+    "spend_time": 1.2, // 学习时长，以小时为单位，必填
+    "addtime": 17673770, // 用户点击添加的时间，必填
+    "note": "在b站上看的" // 备注，选填
+    "tags": [1,2,3] // tag标签，可看标签表，选填
+}
+```
+
+[科目表MAP](#subject_map)
+
+[标签表MAP](#tag_map)
+
+### **响应示例**
+
+- **成功响应**
+
+```json
+{
+  "msg":"success"
+}
+```
+
+- **错误响应**
+
+```json
+{
+  "error": "详细信息"
+}
+```
+
+
+
 ---
 
 # 新闻相关
