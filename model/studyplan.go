@@ -26,13 +26,20 @@ type Study struct {
 }
 
 var SUBJECT_MAP = map[int]string{
-	1: "Java",
-	2: "C语言",
-	3: "Python",
-	4: "C++",
-	// 5: "网络工程",
-	// 6: "电子信息科学与技术",
-	// 7: "信息与计算科学",
+	1:  "Java",
+	2:  "C语言",
+	3:  "Python",
+	4:  "C++",
+	5:  "MySql",
+	6:  "Spring",
+	7:  "Redis",
+	8:  "docker",
+	9:  "git",
+	10: "linux",
+	11: "Html + css + js",
+	12: "Go",
+	13: "PHP",
+	14: "k8s",
 }
 
 var STUDY_TAG_MAP = map[int]string{
