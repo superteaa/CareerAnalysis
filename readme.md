@@ -232,42 +232,76 @@ GET /captcha/abc123
 
 ---
 
-# 技能树（没做好）
+# 学习记录
 
-## GetStudyList API 接口文档
+## AddPlan API
 
 ### **接口描述**
-`GetStudyList` 接口用于获取指定用户的技能列表，并返回每个技能的花费时间及总花费时间的汇总信息。
+`AddPlan` 接口用于添加用户学习记录。
+
+![alt text](asset/image-20240811165753658.png)
 
 ### **请求 URL**
-`GET /study/get-list`
-
-
+`POST /study/add-plan`
 
 ### **请求头**
-- `Authorization: Bearer <token>`
+- `Authorization: <token>`
+  
   - 用于用户鉴权的 JWT token
+  
+    
 
-### **请求参数**
+### <span id="subject_map">科目表（待完善）</span>
 
-| 参数名称 | 类型 | 是否必填 | 说明              |
-| -------- | ---- | -------- | ----------------- |
-| 暂无   |  |        | |
+SUBJECT_MAP = map[int]string{
 
-### **响应参数**
+  1: "Java",
 
-| 参数名称       | 类型   | 说明                                           |
-| -------------- | ------ | ---------------------------------------------- |
-| subjects_info  | array  | 包含每个技能的信息，详见下方 `subject_info` 结构 |
-| sum_time       | uint   | 用户所有技能花费的总时间                         |
-<br>
+  2: "C语言",
 
-- `subject_info` 结构：
+  3: "Python",
 
-| 参数名称        | 类型   | 说明                    |
-| --------------- | ------ | ----------------------- |
-| subject_name    | string | 技能的名称              |
-| subject_spend   | uint   | 在该技能上花费的时间    |
+  4: "C++",
+
+}
+
+
+
+### <span id="tag_map">Tag表</span>
+
+STUDY_TAG_MAP = map[int]string{
+
+  1: "有问题",
+
+  2: "新知识",
+
+  3: "待总结",
+
+  4: "没看懂",
+
+  5: "有点问题",
+
+  6: "其他",
+
+}
+
+### **JSON请求格式**
+
+```json
+{
+    "plan_name": "看了两小时黑马程序员", // 名称，选填
+    "subject_id": 2, // 学习课目的id，前端需要同步建一个科目表MAP，必填
+    "study_time": 17673868, // 用户所填入的日期，必填
+    "spend_time": 1.2, // 学习时长，以小时为单位，必填
+    "addtime": 17673770, // 用户点击添加的时间，必填
+    "note": "在b站上看的" // 备注，选填
+    "tags": [1,2,3] // tag标签，可看标签表，选填
+}
+```
+
+[科目表MAP](#subject_map)
+
+[标签表MAP](#tag_map)
 
 ### **响应示例**
 
@@ -275,30 +309,374 @@ GET /captcha/abc123
 
 ```json
 {
-  "subjects_info": [
-    {
-      "subject_name": "Golang",
-      "subject_spend": 120
-    },
-    {
-      "subject_name": "mysql",
-      "subject_spend": 80
-    }
-  ],
-  "sum_time": 200
+  "msg":"success"
+}
+```
+
+- **错误响应**
+
+```json
+{
+  "error": "参数格式错误"
 }
 ```
 
 
 
-### **错误码**
+## GetStudyData API
 
-| 错误码 | 描述                 |
-| ------ | -------------------- |
-| 200    | 用户不存在或无数据   |
-| 500    | 内部服务器错误       |
-<br>
-<br>
+### **接口描述**
+
+`GetStudyData` 接口获取用户学习数据。
+
+![alt text](asset/微信图片_20240811171514.png)
+
+### **请求 URL**
+
+`GET /study/get-data`
+
+
+
+### **请求头**
+
+- `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+    
+
+### **请求参数**
+
+```json
+	无
+```
+
+[科目表MAP](#subject_map)
+
+### **响应示例**
+
+- **成功响应**
+
+```json
+{
+    "average_time": "0.86",  // 本周平均学习时长
+    "subjects_info": [
+        {
+            "data": [
+                0,0,0,0,0,0,3.7
+            ],  // 该科目七天内的学习时长
+            "subject_id": 1,  // 科目ID
+            "subject_name": "Java"  // 科目名称
+        },
+        {
+            "data": [
+                0,0,0,0,0,0,3
+            ],
+            "subject_id": 2,
+            "subject_name": "C语言"
+        }
+    ],
+    "xAxis": [
+        "8.5",
+        "8.6",
+        "8.7",
+        "8.8",
+        "8.9",
+        "8.10",
+        "8.11"
+    ]  // 前七天的日期
+}
+```
+
+- **错误响应**
+
+```json
+{
+  "error": "服务器内部错误"
+}
+```
+
+
+
+## GetPlanList API
+
+### **接口描述**
+
+`GetPlanList` 接口获取用户学习记录列表。
+
+### **请求 URL**
+
+`GET /study/get-plan-list`
+
+### **请求头**
+
+- `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+    
+
+### **请求参数**
+
+```json
+`page` - 页码
+`pagesize` - 取几条信息
+```
+
+### 请求示例
+
+`GET /study/get-plan-list?page=1&pagesize=10`
+
+### **响应示例**
+
+[科目表MAP](#subject_map)
+
+[标签表MAP](#tag_map)
+
+- **成功响应**
+
+```json
+{
+    "2024-8-11": [
+        {
+            "plan_id": 27,
+            "spend_time": 5.8,
+            "study_time": 1723372795,
+            "subject": "C语言",
+            "subject_id": 2,
+            "tags": [
+                7,
+                8,
+                9
+            ]
+        },
+        {
+            "plan_id": 26,
+            "spend_time": 5.8,
+            "study_time": 1723372795,
+            "subject": "C语言",
+            "subject_id": 2,
+            "tags": [
+                7,
+                8,
+                9
+            ]
+        },
+        {
+            "plan_id": 25,
+            "spend_time": 5.8,
+            "study_time": 1723372795,
+            "subject": "C语言",
+            "subject_id": 2,
+            "tags": [
+                1,
+                2,
+                3
+            ]
+        },
+        {
+            "plan_id": 24,
+            "spend_time": 5.8,
+            "study_time": 1723372795,
+            "subject": "C语言",
+            "subject_id": 2,
+            "tags": [
+                0
+            ]
+        },
+        {
+            "plan_id": 23,
+            "spend_time": 5.8,
+            "study_time": 1723372795,
+            "subject": "C语言",
+            "subject_id": 2,
+            "tags": [
+                0
+            ]
+        },
+        {
+            "plan_id": 22,
+            "spend_time": 5.8,
+            "study_time": 1723372795,
+            "subject": "C语言",
+            "subject_id": 2,
+            "tags": [
+                0
+            ]
+        }
+    ],
+    "2024-8-13": [
+        {
+            "plan_id": 5,
+            "spend_time": 1,
+            "study_time": 1723478400,
+            "subject": "C语言",
+            "subject_id": 2,
+            "tags": [
+                0
+            ]
+        },
+        {
+            "plan_id": 4,
+            "spend_time": 1.2,
+            "study_time": 1723478400,
+            "subject": "Java",
+            "subject_id": 1,
+            "tags": [
+                0
+            ]
+        },
+        {
+            "plan_id": 3,
+            "spend_time": 0,
+            "study_time": 1723478400,
+            "subject": "Java",
+            "subject_id": 1,
+            "tags": [
+                0
+            ]
+        },
+        {
+            "plan_id": 1,
+            "spend_time": 1,
+            "study_time": 1723478400,
+            "subject": "Java",
+            "subject_id": 1,
+            "tags": [
+                0
+            ]
+        }
+    ]
+}
+```
+
+- **错误响应**
+
+```json
+{
+  "error": "错误信息" 
+}
+```
+
+
+
+## GetPlanDetail API
+
+### **接口描述**
+
+`GetPlanDetail` 接口获取用户学习记录详细信息。
+
+### **请求 URL**
+
+`GET /study/get-plan-detail`
+
+### **请求头**
+
+- `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+    
+
+### **请求参数**
+
+```json
+`plan_id` - 记录的id
+```
+
+### 请求示例
+
+`GET /study/get-plan-list?plan_id=1`
+
+### **响应示例**
+
+[科目表MAP](#subject_map)
+
+[标签表MAP](#tag_map)
+
+- **成功响应**
+
+```json
+{
+    "note": "",
+    "plan_id": 17,
+    "plan_name": "",
+    "spend_time": 5.8,
+    "study_time": 1723372795,
+    "subject": "C语言",
+    "subject_id": 2,
+    "tags": [
+        0
+    ]
+}
+```
+
+- **错误响应**
+
+```json
+{
+  "error": "错误信息" 
+}
+```
+
+
+
+## ChangePlan API
+
+### **接口描述**
+
+`ChangePlan` 接口用于更改用户学习记录。
+
+### **请求 URL**
+
+`POST /study/change-plan`
+
+### **请求头**
+
+- `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+
+### **JSON请求格式**
+
+```json
+{
+    "plan_id": 2, //id，必填
+    "plan_name": "看了两小时黑马程序员", // 名称，选填
+    "subject_id": 2, // 学习课目的id，必填
+    "study_time": 17673868, // 用户所填入的日期，必填
+    "spend_time": 1.2, // 学习时长，以小时为单位，必填
+    "addtime": 17673770, // 用户点击添加的时间，必填
+    "note": "在b站上看的" // 备注，选填
+    "tags": [1,2,3] // tag标签，可看标签表，选填
+}
+```
+
+[科目表MAP](#subject_map)
+
+[标签表MAP](#tag_map)
+
+### **响应示例**
+
+- **成功响应**
+
+```json
+{
+  "msg":"success"
+}
+```
+
+- **错误响应**
+
+```json
+{
+  "error": "详细信息"
+}
+```
+
+
+
 ---
 
 # 新闻相关
@@ -315,7 +693,8 @@ GET /captcha/abc123
 此接口用于获取新闻列表，无详细新闻内容，未做分页等处理。
 
 ### 参数
-**请求头**: `Authorization: Bearer <token>`
+**请求头**: `Authorization: <token>`
+
   - 用于用户鉴权的 JWT token
 
 
@@ -370,7 +749,8 @@ GET /news/get-list
 此接口用于获取新闻详细信息。
 
 ### 参数
-**请求头**： `Authorization: Bearer <token>`
+**请求头**： `Authorization: <token>`
+
   - 用于用户鉴权的 JWT token
 
 **请求体**：`news_id`
@@ -421,7 +801,7 @@ GET /news/get-detail?news_id=12
 ### **请求**
 #### **请求头**：
 
- `Authorization: Bearer <token>`
+ `Authorization: <token>`
 
   - 用于用户鉴权的 JWT token
 
@@ -462,6 +842,84 @@ GET /news/get-detail?news_id=12
 
 
 ---
+## 获取详细专业信息
+
+### 请求
+
+- **方法**：`GET`
+- **URL**：`/major/get-detail`
+
+### 描述
+
+此接口用于获取专业详细信息，包括评价等。
+
+### 参数
+
+**请求头**： `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+**请求体**：`major_id`
+
+  - 在获取专业列表时，返回的major_id
+
+
+### 响应
+
+- **状态码**：
+
+  - `200 OK`：成功返回专业信息
+  - `500 Internal Server Error`：查询数据库失败
+
+- **响应体**：
+
+  - **成功**：返回专业信息。
+
+    ```json
+    {
+        "commen_list": [
+            {
+                "body": "经历了今年的秋招，感觉目前通信行业确实陷入了周期性的寒冬，反而计算机相关的行业蓬勃发展，作为一个已经入坑的通信人只能期待5G能带给我们一点红利了。",
+                "comment_id": 1,
+                "star": 3,
+                "title": "周期性的寒冬",
+                "user": "精神孟家人"
+            },
+            {
+                "body": "主要是数电、模电、高频电子线路、信号与系统、数字信号处理、嵌入式开发，单片机等。再往前就是微电子、半导体、集成电路。现在没什么纯硬件，都是软件驱动硬件，搞软硬结合。所以说，硬件专业=硬件+软件。",
+                "comment_id": 2,
+                "star": 2,
+                "title": "搞电子",
+                "user": "zzz"
+            }
+        ],
+        "major_info": {
+            "intro": "通信工程，英文名Communication Engineering，是电子工程的一个重要分支，也是电子信息类 子专业，更是一门重要的基础学科。",
+            "major_id": 1,
+            "name": "通信工程",
+            "pic_url": "https://jf-open-prod-1301446188.cos.ap-guangzhou.myqcloud.com/media/S/23/0318/De58KONES8-WEVdYzFvu5jJS.jpg"
+        }
+    }
+    ```
+
+  - **失败**：
+
+    ```json
+    {
+      "error": "查询数据库失败" //具体错误信息，如“major_id不能为空”，“major_id不能为空”
+    }
+    ```
+
+### 示例
+
+#### 请求示例
+
+```
+GET /major/get-detail?major_id=1
+```
+
+# 
+
 <br>
 <br>
 

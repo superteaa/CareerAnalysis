@@ -3,4 +3,7 @@ app.log
 CareerAnalysis
 175.178.24.103_id_ed25519
 config.json
+/tmp
+go.sum
+go.mod
 8.138.115.27_id_ed25519

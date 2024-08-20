@@ -1,6 +1,7 @@
 package baseClass
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -12,12 +13,12 @@ var jwtKey = []byte("goodAndgood")
 
 // Claims 结构体，用于生成JWT
 type Claims struct {
-	UserID uint `json:"user_id"`
+	UserID int `json:"user_id"`
 	jwt.StandardClaims
 }
 
 // GenerateJWT 生成JWT
-func GenerateJWT(userID uint) (string, error) {
+func GenerateJWT(userID int) (string, error) {
 	expirationTime := time.Now().Add(99999999 * time.Minute)
 	claims := &Claims{
 		UserID: userID,
@@ -40,6 +41,26 @@ func ValidateJWT() gin.HandlerFunc {
 			return
 		}
 
+		db := GetDB()
+		result := map[string]interface{}{
+			"id":       0,
+			"token":    "",
+			"username": "",
+		}
+		db_result := db.Raw("SELECT * FROM user WHERE token = ?", tokenString).Scan(&result)
+		if db_result.Error != nil {
+			log.Println("jwt处理有问题:", db_result.Error)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
+			c.Abort()
+			return
+		}
+		if db_result.RowsAffected != 1 {
+			log.Println("token无效", tokenString)
+			c.JSON(http.StatusOK, gin.H{"error": "Bad token"})
+			c.Abort()
+			return
+		}
+
 		claims := &Claims{}
 		_, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			return jwtKey, nil
@@ -51,8 +72,9 @@ func ValidateJWT() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("userID", claims.UserID)
+		c.Set("userID", result["id"])
+		log.Println("token鉴权", result["id"], tokenString)
 		c.Next()
-		return
+		// return
 	}
 }

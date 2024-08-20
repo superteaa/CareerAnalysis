@@ -10,7 +10,7 @@ import (
 
 // User 模型
 type User struct {
-	ID       uint   `gorm:"primaryKey"`
+	ID       int    `gorm:"primaryKey"`
 	Username string `gorm:"uniqueIndex"`
 	Password string
 	Email    string
@@ -41,7 +41,7 @@ func Login(c *gin.Context) {
 	}
 
 	// 初始化数据库和Redis连接
-	db := baseClass.InitDB()
+	db := baseClass.GetDB()
 
 	var user User
 	if err := db.Where("username = ?", request.Username).First(&user).Error; err != nil {
@@ -90,7 +90,7 @@ func Signup(c *gin.Context) {
 	}
 
 	// 初始化数据库连接
-	db := baseClass.InitDB()
+	db := baseClass.GetDB()
 
 	// 检查用户名是否已经存在
 	var existingUser User

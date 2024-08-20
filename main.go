@@ -40,6 +40,8 @@ func main() {
 
 	log.Println("应用程序启动")
 
+	baseClass.InitDB()
+
 	r := gin.Default()
 	r.POST("/login", model.Login)
 	r.POST("/signup", model.Signup)
@@ -50,7 +52,11 @@ func main() {
 	{
 		study_r := authorized.Group("/study")
 		{
-			study_r.GET("/get-list", model.GetStudyList)
+			study_r.POST("/add-plan", model.AddPlan)
+			study_r.GET("/get-data", model.GetStudyData)
+			study_r.GET("/get-plan-list", model.GetPlanList)
+			study_r.GET("/get-plan-detail", model.GetPlanDetail)
+			study_r.POST("/change-plan", model.ChangePlan)
 		}
 		new_r := authorized.Group("/news")
 		{
@@ -64,6 +70,7 @@ func main() {
 		major_r := authorized.Group("/major")
 		{
 			major_r.GET("/get-list", model.GetMajorList)
+			major_r.GET("/get-detail", model.GetMajorDetail)
 		}
 	}
 	// r.POST("/hello", func(c *gin.Context) {
