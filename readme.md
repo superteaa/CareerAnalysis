@@ -920,6 +920,124 @@ GET /major/get-detail?major_id=1
 
 # 
 
+
+
+
+
+# 数据分析
+
+## 获取专业的数据
+
+### **接口信息**
+
+- **URL**: `/data/get-detail`
+- **请求方式**: `GET`
+- **描述**: 获取专业数据。
+
+### **请求**
+
+#### **请求头**：
+
+ `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+#### **请求参数**：
+
+  - `major_id`
+      - 在获取专业列表时，返回的major_id
+
+#### 请求示例
+
+```
+GET /data/get-detail?major_id=3
+```
+
+### **响应**
+
+- #### **状态码**:
+
+  - `200 OK`: 请求成功，专业列表包含在响应体中返回。
+  - `500 Internal Server Error`: 服务器内部发生错误。
+
+- #### **响应体**:
+
+  - #### **成功响应示例** (`200 OK`):
+
+    ```json
+    {
+        "data_rows": 5730,  // 数据条数
+        "expand_skill": "afasefdfffffffffesafghsrinkxjbndrjniojnvkmdkljtigjdog",  // 拓展技术栈
+        "last_update": "2024-08-17T00:00:00+08:00",  // 数据更新时间
+        "main_skill": "会考虑近日来添加骨科大夫士大夫变速和规范月饼素养博大精深克格勃金色华府九十八v还是不够被警方比赛u恶化发生的就不顾四个回复",  // 掌握以下技术
+        "subject_value": [
+            {
+                "subject_name": "mysql",
+                "value": 0.1675
+            },
+            {
+                "subject_name": "spring",
+                "value": 0.1025
+            },
+            {
+                "subject_name": "redis",
+                "value": 0.09
+            },
+            {
+                "subject_name": "docker",
+                "value": 0.0175
+            },
+            {
+                "subject_name": "git",
+                "value": 0.07
+            },
+            {
+                "subject_name": "linux",
+                "value": 0.1375
+            },
+            {
+                "subject_name": "java",
+                "value": 0.4925
+            },
+            {
+                "subject_name": "go",
+                "value": 0.075
+            },
+            {
+                "subject_name": "php",
+                "value": 0.035
+            },
+            {
+                "subject_name": "k8s",
+                "value": 0.0175
+            },
+            {
+                "subject_name": "c",
+                "value": 0.7425
+            },
+            {
+                "subject_name": "c++",
+                "value": 0.7425
+            },
+            {
+                "subject_name": "Html + css + javascript",
+                "value": 0.3425
+            }
+        ]
+    }
+    ```
+
+  - #### **错误响应示例** (`500 Internal Server Error`):
+
+    ```json
+    {
+      "error": "服务器内部错误"
+    }
+    ```
+
+
+---
+
 <br>
 <br>
 

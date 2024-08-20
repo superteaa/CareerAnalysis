@@ -63,9 +63,9 @@ func main() {
 			new_r.GET("/get-list", model.GetNewList)
 			new_r.GET("/get-detail", model.GetNews)
 		}
-		dataAnalys_r := authorized.Group("/data-analys")
+		dataAnalys_r := authorized.Group("/data")
 		{
-			dataAnalys_r.GET("/get-list")
+			dataAnalys_r.GET("/get-detail", model.GetSubjectRate)
 		}
 		major_r := authorized.Group("/major")
 		{
