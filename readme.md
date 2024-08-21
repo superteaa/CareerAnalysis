@@ -966,18 +966,14 @@ GET /data/get-detail?major_id=3
 
     ```json
     {
-        "data_rows": 5730,  // 数据条数
-        "expand_skill": "afasefdfffffffffesafghsrinkxjbndrjniojnvkmdkljtigjdog",  // 拓展技术栈
-        "last_update": "2024-08-17T00:00:00+08:00",  // 数据更新时间
-        "main_skill": "会考虑近日来添加骨科大夫士大夫变速和规范月饼素养博大精深克格勃金色华府九十八v还是不够被警方比赛u恶化发生的就不顾四个回复",  // 掌握以下技术
+        "data_rows": 4966,  // 记录条数
+        "expand_skill": "MySQL是最流行的开源关系型数据库管理系统之一，常用于Web应用开发。它支持SQL语言，能够处理大量数据并支持高效的查询操作。<br>Docker是一种用于开发、交付和运行应用程序的开源平台，通过容器技术将应用程序及其依赖项打包在一起，确保其在不同环境中都能一致运行。",  // 拓展技术栈
+        "last_update": 1723910400,  // 上次更新时间戳
+        "main_skill": "C语言是一种通用的、过程式编程语言，因其高效性、灵活性和对硬件的低级控制能力而成为计算机科学与工程的基础语言之一。<br>Java有丰富的标准库和企业版库，支持多线程编程、网络编程和数据库连接。其健壮性和安全性使其成为银行、金融等高要求领域的首选编程语言。",  // 主要技术栈
         "subject_value": [
             {
                 "subject_name": "mysql",
                 "value": 0.1675
-            },
-            {
-                "subject_name": "spring",
-                "value": 0.1025
             },
             {
                 "subject_name": "redis",
@@ -1016,19 +1012,15 @@ GET /data/get-detail?major_id=3
                 "value": 0.7425
             },
             {
-                "subject_name": "c++",
-                "value": 0.7425
-            },
-            {
                 "subject_name": "Html + css + javascript",
                 "value": 0.3425
             }
         ]
     }
     ```
-
+    
   - #### **错误响应示例** (`500 Internal Server Error`):
-
+  
     ```json
     {
       "error": "服务器内部错误"

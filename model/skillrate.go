@@ -35,6 +35,9 @@ func GetSubjectRate(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "查询数据库失败"})
 		return
 	}
+
+	record_rows := db_result.RowsAffected
+
 	var subjects_info []map[string]interface{}
 	var maxRate float32
 	maxSubject := map[string]interface{}{
@@ -60,15 +63,23 @@ func GetSubjectRate(c *gin.Context) {
 		subjects_info = append(subjects_info, maxSubject)
 	}
 
+	var major_dec Major
+	db_result = db.Where("id = ?", major_id).Find(&major_dec)
+	if db_result.Error != nil {
+		log.Println("Major查询数据库失败:", db_result.Error)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "查询数据库失败"})
+		return
+	}
+
 	now := time.Now()
 	threeDaysAgo := now.AddDate(0, 0, -3)
-	threeDaysAgoMidnight := time.Date(threeDaysAgo.Year(), threeDaysAgo.Month(), threeDaysAgo.Day(), 0, 0, 0, 0, threeDaysAgo.Location())
+	threeDaysAgoMidnight := time.Date(threeDaysAgo.Year(), threeDaysAgo.Month(), threeDaysAgo.Day(), 0, 0, 0, 0, threeDaysAgo.Location()).Unix()
 	result := map[string]interface{}{
 		"subject_value": subjects_info,
-		"data_rows":     db_result.RowsAffected * 382,
+		"data_rows":     record_rows * 382,
 		"last_update":   threeDaysAgoMidnight,
-		"main_skill":    "会考虑近日来添加骨科大夫士大夫变速和规范月饼素养博大精深克格勃金色华府九十八v还是不够被警方比赛u恶化发生的就不顾四个回复",
-		"expand_skill":  "afasefdfffffffffesafghsrinkxjbndrjniojnvkmdkljtigjdog",
+		"main_skill":    major_dec.Main_skill,
+		"expand_skill":  major_dec.Expand_skill,
 	}
 
 	c.JSON(http.StatusOK, result)

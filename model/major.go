@@ -14,10 +14,10 @@ type Major struct {
 	ID   int // 专业id 1-通信工程，2-电子信息工程，3-计算机科学与技术，4-软件工程，5-网络工程，6-电子信息科学与技术，7-信息与计算科学
 	Type int // 专业分类，0-工程类，1-信息类，2-理学类
 	// Major_no  int  // 弃用
-	Pic_Url string
-	Intro   string
-	// Com_User  string
-	// Com_Title string
+	Pic_Url      string
+	Intro        string
+	Main_skill   string
+	Expand_skill string
 	// Com_Body  string
 	// Star_Num  int
 }
