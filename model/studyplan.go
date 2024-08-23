@@ -2,7 +2,6 @@ package model
 
 import (
 	"CareerAnalysis/baseClass"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,18 +14,18 @@ import (
 
 // Study 模型
 type Study struct {
-	ID         int     `gorm:"primaryKey"`
-	UserID     int     `gorm:"column:user_id"`
-	PlanName   string  `gorm:"column:plan_name" json:"plan_name"`
+	ID       int    `gorm:"primaryKey"`
+	UserID   int    `gorm:"column:user_id"`
+	PlanName string `gorm:"column:plan_name" json:"plan_name"`
 	// SubjectID  int     `gorm:"column:subject_id" json:"subject_id"`
-	SubjectCatKey  int     `gorm:"column:subject_cat_key"`
-	SubjectSubKey  int     `gorm:"column:subject_sub_key"`
-	SubjectKey  int     `gorm:"column:subject_key"`
-	StudyTime  int     `gorm:"column:study_time" json:"study_time"` //学习日期
-	Spend_Time float64 `json:"spend_time"`                          // 学习时长
-	AddTime    int     `gorm:"column:addtime" json:"add_time"`      // 用户操作的时间
-	Note       string  `json:"note"`                                // 备注
-	Tags       string  `json:"tags"`                                // tag标签
+	SubjectCatKey int     `gorm:"column:subject_cat_key"`
+	SubjectSubKey int     `gorm:"column:subject_sub_key"`
+	SubjectKey    int     `gorm:"column:subject_key"`
+	StudyTime     int     `gorm:"column:study_time" json:"study_time"` //学习日期
+	Spend_Time    float64 `json:"spend_time"`                          // 学习时长
+	AddTime       int     `gorm:"column:addtime" json:"add_time"`      // 用户操作的时间
+	Note          string  `json:"note"`                                // 备注
+	Tags          string  `json:"tags"`                                // tag标签
 }
 
 var SUBJECT_MAP = map[int]map[int]map[int]string{
@@ -439,6 +438,7 @@ func subKeyName(catKey, subKey int) string {
 			return "网络操作系统"
 		case 8:
 			return "云网络"
+		}
 	case 4:
 		switch subKey {
 		case 1:
@@ -506,6 +506,36 @@ func (Study) TableName() string {
 	return "study_plans"
 }
 
+type AddPlanRequest struct {
+	PlanName      string        `json:"plan_name" binding:"required"`
+	SubjectCatKey string        `json:"subject_cat_key" binding:"required"`
+	SubjectSubKey string        `json:"subject_sub_key" binding:"required"`
+	SubjectKey    string        `json:"subject_key" binding:"required"`
+	StudyTime     int           `json:"study_time" binding:"required"`
+	SpendTime     float64       `json:"spend_time" binding:"required"`
+	AddTime       int           `json:"add_time" binding:"required"`
+	Note          string        `json:"note"`
+	Tags          []interface{} `json:"tags"`
+}
+
+// 处理标签，将标签数组转换为逗号分隔的字符串
+func processTags(tags []interface{}) (string, error) {
+	if tags == nil {
+		return "", nil
+	}
+
+	var strSlice []string
+	for _, item := range tags {
+		if num, ok := item.(float64); ok {
+			strSlice = append(strSlice, strconv.FormatFloat(num, 'f', 0, 64))
+		} else {
+			return "", fmt.Errorf("标签必须为数字类型")
+		}
+	}
+
+	return strings.Join(strSlice, ","), nil
+}
+
 func AddPlan(c *gin.Context) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -514,102 +544,67 @@ func AddPlan(c *gin.Context) {
 		}
 	}()
 
-	var data map[string]interface{}
-	if err := c.BindJSON(&data); err != nil {
-		log.Println(err.Error())
+	// 解析并验证请求参数
+	var req AddPlanRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Println("AddPlan请求参数错误:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
 		return
 	}
 
-	// _, ok := data["subject_id"]
-	// if !ok {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
-	// 	return
-	// }
-
-	_, ok = data["user_id"]
-	if ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
-		return
-	}
-
-	_, ok = data["study_time"]
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
-		return
-	}
-
-	_, ok = data["spend_time"]
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
-		return
-	}
-
-	_, ok = data["addtime"]
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
-		return
-	}
-
+	// 获取用户ID
 	userID, exists := c.Get("userID")
 	if !exists {
-		log.Println("GetStudyList:", "鉴权失败，用户不存在")
+		log.Println("AddPlan: 鉴权失败，用户不存在")
 		c.JSON(http.StatusOK, gin.H{"error": "用户不存在"})
 		return
 	}
 
-	data["user_id"] = userID
-
-	tagsArr, ok := data["tags"].([]interface{})
-	if ok {
-		// tags 是一个 []interface{} 类型的数组
-		isIntArray := true
-
-		// 遍历数组元素，检查是否每个元素都是整数
-		for _, item := range tagsArr {
-			if _, ok := item.(float64); !ok {
-				isIntArray = false
-				log.Println(item)
-				break
-			}
-		}
-
-		if isIntArray {
-			// tags 是一个整型数组
-
-			// 将整数数组转换为字符串数组
-			var strSlice []string
-			for _, item := range tagsArr {
-				num := item.(float64)
-				strSlice = append(strSlice, strconv.FormatFloat(num, 'f', 0, 64))
-			}
-
-			// 使用逗号将字符串数组连接为一个字符串
-			arrayStr := strings.Join(strSlice, ",")
-			// arrayStr 现在包含了逗号分隔的整数数组字符串表示
-			data["tags"] = arrayStr
-		} else {
-			// tags 不是整型数组
-			log.Println("tags格式错误:")
-			c.JSON(http.StatusOK, gin.H{"error": "tags格式错误"})
-			return
-		}
+	// 处理标签
+	tagsStr, err := processTags(req.Tags)
+	if err != nil {
+		log.Println("标签格式错误:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "tags格式错误"})
+		return
 	}
 
-	data["subject_cat_key"], data["subject_sub_key"], datadata["subject_key"] = mapToID(data["subject_cat_key"], data["subject_sub_key"], datadata["subject_key"])
+	// 将分类、子分类和键值转换为对应的ID
+	catKey, subKey, key := mapToID(req.SubjectCatKey, req.SubjectSubKey, req.SubjectKey)
+	if catKey == 0 && subKey == 0 && key == 0 {
+		log.Println("无效的科目信息", userID)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的科目信息"})
+		return
+	}
 
+	// 构造数据
+	study := Study{
+		UserID:        int(userID.(uint32)),
+		PlanName:      req.PlanName,
+		SubjectCatKey: catKey,
+		SubjectSubKey: subKey,
+		SubjectKey:    key,
+		StudyTime:     req.StudyTime,
+		Spend_Time:    req.SpendTime,
+		AddTime:       req.AddTime,
+		Note:          req.Note,
+		Tags:          tagsStr,
+	}
+
+	// 启动事务
 	db := baseClass.GetDB()
-	db_result := db.Table("study_plans").Create(&data)
+	tx := db.Begin()
 
-	if db_result.Error != nil {
-		log.Println("AddPlan数据库出错:", db_result.Error)
+	// 插入数据
+	if err := tx.Create(&study).Error; err != nil {
+		log.Println("AddPlan数据库出错:", err)
+		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
 		return
 	}
 
+	// 提交事务
+	tx.Commit()
 	c.JSON(http.StatusOK, gin.H{"msg": "success"})
-	// if (data[])
-
 }
 
 func GetStudyData(c *gin.Context) {
@@ -632,7 +627,7 @@ func GetStudyData(c *gin.Context) {
 	var datas []Study
 	var xAxis []string
 	date_info := make(map[string]interface{})
-	subject_info := make(map[int]map[string]float64)
+	subject_info := make(map[string]map[string]float64)
 
 	// 获取当前时间并生成七天内的日期列表
 	now := time.Now()
@@ -652,32 +647,29 @@ func GetStudyData(c *gin.Context) {
 	var sum_time float64
 	sum_time = 0
 
-	// 计算所有 SubjectID 相同的 SpendTime 之和
+	// 计算所有相同 Subject 的 SpendTime 之和
 	for _, v := range datas {
-		// 将 StudyTime 转换为 time.Time 类型
-
 		studyTime := int64(v.StudyTime)
 		t := time.Unix(studyTime, 0)
 		dateStr := fmt.Sprintf("%d.%d", t.Month(), t.Day())
 
-		// 检查日期是否在 xAxis 列表中
 		if _, exists := date_info[dateStr]; exists {
-			// date_info[dateStr][v.SubjectID] += v.Spend_Time
 			sum_time += v.Spend_Time
-			if subject_info[v.SubjectID] == nil {
-				subject_info[v.SubjectID] = make(map[string]float64)
-			}
-			subject_info[v.SubjectID][dateStr] += v.Spend_Time
 
+			// 获取学科名称
+			subjectName := SUBJECT_MAP[v.SubjectCatKey][v.SubjectSubKey][v.SubjectKey]
+			if subject_info[subjectName] == nil {
+				subject_info[subjectName] = make(map[string]float64)
+			}
+			subject_info[subjectName][dateStr] += v.Spend_Time
 		}
 	}
 
 	subjects_info := []map[string]interface{}{}
-	for subjectID, v := range subject_info {
+	for subjectName, v := range subject_info {
 		dataArr := make([]float64, 0, len(xAxis))
 		for _, dateStr := range xAxis {
 			if spendTime, exists := v[dateStr]; exists {
-
 				dataArr = append(dataArr, spendTime)
 			} else {
 				dataArr = append(dataArr, 0.0) // 若当天无数据，则填入0
@@ -685,8 +677,7 @@ func GetStudyData(c *gin.Context) {
 		}
 
 		singleSubject := map[string]interface{}{
-			"subject_id":   subjectID,
-			"subject_name": SUBJECT_MAP[subjectID],
+			"subject_name": subjectName,
 			"data":         dataArr,
 		}
 
@@ -736,11 +727,15 @@ func GetPlanList(c *gin.Context) {
 	}
 
 	var plan_list []Study
-	// now := time.Now()
-	// timestamp := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Unix()
 	db := baseClass.GetDB()
 
-	db.Select("id, subject_id, spend_time, study_time, tags").Where("user_id = ?", userID).Order("study_time DESC").Order("addtime DESC").Limit(pagesizeInt).Offset((pageInt - 1) * pagesizeInt).Find(&plan_list)
+	db.Select("id, subject_cat_key, subject_sub_key, subject_key, spend_time, study_time, tags").
+		Where("user_id = ?", userID).
+		Order("study_time DESC").
+		Order("addtime DESC").
+		Limit(pagesizeInt).
+		Offset((pageInt - 1) * pagesizeInt).
+		Find(&plan_list)
 
 	result := make(map[string][]map[string]interface{})
 
@@ -750,14 +745,16 @@ func GetPlanList(c *gin.Context) {
 
 		// 将切片中的字符串转换为整数切片
 		var intSlice []int
-
 		for _, str := range strSlice {
 			num, err := strconv.Atoi(str)
 			if err != nil {
-				log.Println("字符串转数组err：", err)
+				log.Println("字符串转数组错误：", err)
 			}
 			intSlice = append(intSlice, num)
 		}
+
+		// 获取学科名称
+		subjectName := SUBJECT_MAP[v.SubjectCatKey][v.SubjectSubKey][v.SubjectKey]
 
 		// 将study_time转换为'YYYY-MM-DD'格式
 		studyTimeStr := time.Unix(int64(v.StudyTime), 0).Format("2006-1-2")
@@ -765,8 +762,7 @@ func GetPlanList(c *gin.Context) {
 		// 构建单条记录
 		single := map[string]interface{}{
 			"plan_id":    v.ID,
-			"subject_id": v.SubjectID,
-			"subject":    SUBJECT_MAP[v.SubjectID],
+			"subject":    subjectName,
 			"study_time": v.StudyTime,
 			"spend_time": v.Spend_Time,
 			"tags":       intSlice,
@@ -776,7 +772,6 @@ func GetPlanList(c *gin.Context) {
 		result[studyTimeStr] = append(result[studyTimeStr], single)
 	}
 	c.JSON(http.StatusOK, result)
-
 }
 
 func GetPlanDetail(c *gin.Context) {
@@ -789,7 +784,7 @@ func GetPlanDetail(c *gin.Context) {
 
 	userID, exists := c.Get("userID")
 	if !exists {
-		log.Println("GetTodayPlan:", "鉴权失败，用户不存在")
+		log.Println("GetPlanDetail:", "鉴权失败，用户不存在")
 		c.JSON(http.StatusOK, gin.H{"error": "用户不存在"})
 		return
 	}
@@ -814,20 +809,21 @@ func GetPlanDetail(c *gin.Context) {
 
 	// 将切片中的字符串转换为整数切片
 	var intSlice []int
-
 	for _, str := range strSlice {
 		num, err := strconv.Atoi(str)
 		if err != nil {
-			log.Println("字符串转数组err：", err)
+			log.Println("字符串转数组错误：", err)
 		}
 		intSlice = append(intSlice, num)
 	}
 
+	// 获取学科名称
+	subjectName := SUBJECT_MAP[planDetail.SubjectCatKey][planDetail.SubjectSubKey][planDetail.SubjectKey]
+
 	result := map[string]interface{}{
 		"plan_id":    planDetail.ID,
 		"plan_name":  planDetail.PlanName,
-		"subject":    SUBJECT_MAP[planDetail.SubjectID],
-		"subject_id": planDetail.SubjectID,
+		"subject":    subjectName,
 		"study_time": planDetail.StudyTime,
 		"spend_time": planDetail.Spend_Time,
 		"note":       planDetail.Note,
@@ -846,45 +842,17 @@ func ChangePlan(c *gin.Context) {
 
 	var data map[string]interface{}
 	if err := c.BindJSON(&data); err != nil {
-		log.Println(err.Error())
+		log.Println("参数绑定错误:", err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
 		return
 	}
 
-	subject_id, ok := data["subject_id"]
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
-		return
-	}
-
-	_, ok = data["user_id"]
-	if ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
-		return
-	}
-
-	study_time, ok := data["study_time"]
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
-		return
-	}
-
-	spend_time, ok := data["spend_time"]
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
-		return
-	}
-
-	addtime, ok := data["addtime"]
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
-		return
-	}
-
-	plan_id, ok := data["plan_id"]
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
-		return
+	requiredFields := []string{"plan_id", "study_time", "spend_time", "add_time", "subject_cat_key", "subject_sub_key", "subject_key"}
+	for _, field := range requiredFields {
+		if _, ok := data[field]; !ok {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "缺少必要参数"})
+			return
+		}
 	}
 
 	userID, exists := c.Get("userID")
@@ -894,71 +862,49 @@ func ChangePlan(c *gin.Context) {
 		return
 	}
 
-	tagsArr, ok := data["tags"].([]interface{})
-	if ok {
-		// tags 是一个 []interface{} 类型的数组
-		isIntArray := true
-
-		// 遍历数组元素，检查是否每个元素都是整数
+	// 处理 tags
+	if tagsArr, ok := data["tags"].([]interface{}); ok {
+		var strSlice []string
 		for _, item := range tagsArr {
-			if _, ok := item.(float64); !ok {
-				isIntArray = false
-				log.Println(item)
-				break
-			}
-		}
-
-		if isIntArray {
-			// tags 是一个整型数组
-
-			// 将整数数组转换为字符串数组
-			var strSlice []string
-			for _, item := range tagsArr {
-				num := item.(float64)
+			if num, ok := item.(float64); ok {
 				strSlice = append(strSlice, strconv.FormatFloat(num, 'f', 0, 64))
+			} else {
+				log.Println("tags格式错误:", item)
+				c.JSON(http.StatusBadRequest, gin.H{"error": "tags格式错误"})
+				return
 			}
-
-			// 使用逗号将字符串数组连接为一个字符串
-			arrayStr := strings.Join(strSlice, ",")
-			// arrayStr 现在包含了逗号分隔的整数数组字符串表示
-			data["tags"] = arrayStr
-		} else {
-			// tags 不是整型数组
-			log.Println("tags格式错误:")
-			c.JSON(http.StatusOK, gin.H{"error": "tags格式错误"})
-			return
 		}
+		data["tags"] = strings.Join(strSlice, ",")
 	}
 
+	// 查询计划详情
 	var planDetail Study
-
 	db := baseClass.GetDB()
-	db_result := db.Table("study_plans").Where("id = ?", plan_id).First(&planDetail)
+	if err := db.Where("id = ?", data["plan_id"]).First(&planDetail).Error; err != nil {
+		log.Println("ChangePlan数据库查询错误:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
+		return
+	}
 
+	// 检查用户权限
 	if planDetail.UserID != int(userID.(uint32)) {
 		log.Println("ChangePlan:", "用户无权限访问该数据, planDetail:", planDetail.UserID, "userID:", userID)
 		c.JSON(http.StatusOK, gin.H{"error": "用户无权限访问该数据"})
 		return
 	}
 
-	// c.JSON(http.StatusOK, planDetail)
-	// return
-
-	if db_result.Error != nil {
-		log.Println("ChangePlan数据库出错:", db_result.Error)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
-		return
-	}
-
+	// 更新计划详情
 	if val, ok := data["plan_name"].(string); ok {
 		planDetail.PlanName = val
 	}
-	log.Println("1")
-	planDetail.SubjectID = int(subject_id.(float64))
-	log.Println("2")
-	planDetail.StudyTime = int(study_time.(float64))
+	planDetail.SubjectCatKey, planDetail.SubjectSubKey, planDetail.SubjectKey = mapToID(data["subject_cat_key"].(string), data["subject_sub_key"].(string), data["subject_key"].(string))
+	// planDetail.SubjectCatKey = int(data["subject_cat_key"].(float64))
+	// planDetail.SubjectSubKey = int(data["subject_sub_key"].(float64))
+	// planDetail.SubjectKey = int(data["subject_key"].(float64))
 
-	planDetail.Spend_Time = spend_time.(float64)
+	planDetail.StudyTime = int(data["study_time"].(float64))
+	planDetail.Spend_Time = data["spend_time"].(float64)
+	planDetail.AddTime = int(data["add_time"].(float64))
 
 	if val, ok := data["note"].(string); ok {
 		planDetail.Note = val
@@ -966,16 +912,13 @@ func ChangePlan(c *gin.Context) {
 	if val, ok := data["tags"].(string); ok {
 		planDetail.Tags = val
 	}
-	log.Println("3")
-	planDetail.AddTime = int(addtime.(float64))
 
-	db_result = db.Save(&planDetail)
-	if db_result.Error != nil {
-		log.Println("ChangePlan数据库出错:", db_result.Error)
+	// 保存更改
+	if err := db.Save(&planDetail).Error; err != nil {
+		log.Println("ChangePlan数据库保存错误:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"msg": "success"})
-	// if (data[])
 }

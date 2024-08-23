@@ -249,21 +249,6 @@ GET /captcha/abc123
   
   - 用于用户鉴权的 JWT token
   
-    
-
-### <span id="subject_map">科目表（待完善）</span>
-
-SUBJECT_MAP = map[int]string{
-
-  1: "Java",
-
-  2: "C语言",
-
-  3: "Python",
-
-  4: "C++",
-
-}
 
 
 
@@ -290,16 +275,16 @@ STUDY_TAG_MAP = map[int]string{
 ```json
 {
     "plan_name": "看了两小时黑马程序员", // 名称，选填
-    "subject_id": 2, // 学习课目的id，前端需要同步建一个科目表MAP，必填
+    "subject_cat_key": "软件类", // 必填
+    "subject_sub_key": "前端开发", // 必填
+    "subject_key": "HTML", // 必填
     "study_time": 17673868, // 用户所填入的日期，必填
     "spend_time": 1.2, // 学习时长，以小时为单位，必填
-    "addtime": 17673770, // 用户点击添加的时间，必填
-    "note": "在b站上看的" // 备注，选填
-    "tags": [1,2,3] // tag标签，可看标签表，选填
+    "add_time": 17673770, // 用户点击添加的时间，必填
+    "note": "在b站上看的", // 备注，选填
+    "tags": [1,2,3], // tag标签，可看标签表，选填
 }
 ```
-
-[科目表MAP](#subject_map)
 
 [标签表MAP](#tag_map)
 
@@ -365,14 +350,12 @@ STUDY_TAG_MAP = map[int]string{
             "data": [
                 0,0,0,0,0,0,3.7
             ],  // 该科目七天内的学习时长
-            "subject_id": 1,  // 科目ID
             "subject_name": "Java"  // 科目名称
         },
         {
             "data": [
                 0,0,0,0,0,0,3
             ],
-            "subject_id": 2,
             "subject_name": "C语言"
         }
     ],
@@ -429,8 +412,6 @@ STUDY_TAG_MAP = map[int]string{
 
 ### **响应示例**
 
-[科目表MAP](#subject_map)
-
 [标签表MAP](#tag_map)
 
 - **成功响应**
@@ -439,11 +420,19 @@ STUDY_TAG_MAP = map[int]string{
 {
     "2024-8-11": [
         {
-            "plan_id": 27,
+            "plan_id": 23,
             "spend_time": 5.8,
             "study_time": 1723372795,
-            "subject": "C语言",
-            "subject_id": 2,
+            "subject": "",
+            "tags": [
+                0
+            ]
+        },
+        {
+            "plan_id": 6,
+            "spend_time": 5.8,
+            "study_time": 1723372795,
+            "subject": "",
             "tags": [
                 7,
                 8,
@@ -451,23 +440,30 @@ STUDY_TAG_MAP = map[int]string{
             ]
         },
         {
-            "plan_id": 26,
-            "spend_time": 5.8,
+            "plan_id": 7,
+            "spend_time": 8.8,
             "study_time": 1723372795,
-            "subject": "C语言",
-            "subject_id": 2,
+            "subject": "",
             "tags": [
                 7,
                 8,
                 9
+            ]
+        },
+        {
+            "plan_id": 22,
+            "spend_time": 5.8,
+            "study_time": 1723372795,
+            "subject": "",
+            "tags": [
+                0
             ]
         },
         {
             "plan_id": 25,
             "spend_time": 5.8,
             "study_time": 1723372795,
-            "subject": "C语言",
-            "subject_id": 2,
+            "subject": "",
             "tags": [
                 1,
                 2,
@@ -478,28 +474,16 @@ STUDY_TAG_MAP = map[int]string{
             "plan_id": 24,
             "spend_time": 5.8,
             "study_time": 1723372795,
-            "subject": "C语言",
-            "subject_id": 2,
+            "subject": "",
             "tags": [
                 0
             ]
         },
         {
-            "plan_id": 23,
+            "plan_id": 21,
             "spend_time": 5.8,
             "study_time": 1723372795,
-            "subject": "C语言",
-            "subject_id": 2,
-            "tags": [
-                0
-            ]
-        },
-        {
-            "plan_id": 22,
-            "spend_time": 5.8,
-            "study_time": 1723372795,
-            "subject": "C语言",
-            "subject_id": 2,
+            "subject": "",
             "tags": [
                 0
             ]
@@ -510,28 +494,18 @@ STUDY_TAG_MAP = map[int]string{
             "plan_id": 5,
             "spend_time": 1,
             "study_time": 1723478400,
-            "subject": "C语言",
-            "subject_id": 2,
+            "subject": "",
             "tags": [
                 0
             ]
-        },
-        {
-            "plan_id": 4,
-            "spend_time": 1.2,
-            "study_time": 1723478400,
-            "subject": "Java",
-            "subject_id": 1,
-            "tags": [
-                0
-            ]
-        },
+        }
+    ],
+    "2024-8-21": [
         {
             "plan_id": 3,
             "spend_time": 0,
-            "study_time": 1723478400,
-            "subject": "Java",
-            "subject_id": 1,
+            "study_time": 1724210079,
+            "subject": "",
             "tags": [
                 0
             ]
@@ -539,9 +513,8 @@ STUDY_TAG_MAP = map[int]string{
         {
             "plan_id": 1,
             "spend_time": 1,
-            "study_time": 1723478400,
-            "subject": "Java",
-            "subject_id": 1,
+            "study_time": 1724210079,
+            "subject": "Ethernet",
             "tags": [
                 0
             ]
@@ -586,7 +559,7 @@ STUDY_TAG_MAP = map[int]string{
 
 ### 请求示例
 
-`GET /study/get-plan-list?plan_id=1`
+`GET /study/get-plan-detail?plan_id=4`
 
 ### **响应示例**
 
@@ -598,15 +571,16 @@ STUDY_TAG_MAP = map[int]string{
 
 ```json
 {
-    "note": "",
-    "plan_id": 17,
-    "plan_name": "",
-    "spend_time": 5.8,
-    "study_time": 1723372795,
-    "subject": "C语言",
-    "subject_id": 2,
+    "note": "在b站上看的",
+    "plan_id": 4,
+    "plan_name": "看了两小时黑马程序员",
+    "spend_time": 1.2,
+    "study_time": 17673868,
+    "subject": "HTML",
     "tags": [
-        0
+        1,
+        2,
+        3
     ]
 }
 ```
@@ -642,18 +616,18 @@ STUDY_TAG_MAP = map[int]string{
 
 ```json
 {
-    "plan_id": 2, //id，必填
+    "plan_id": 4, // 必填
     "plan_name": "看了两小时黑马程序员", // 名称，选填
-    "subject_id": 2, // 学习课目的id，必填
+    "subject_cat_key": "软件类", // 必填
+    "subject_sub_key": "前端开发", // 必填
+    "subject_key": "HTML", // 必填
     "study_time": 17673868, // 用户所填入的日期，必填
     "spend_time": 1.2, // 学习时长，以小时为单位，必填
-    "addtime": 17673770, // 用户点击添加的时间，必填
-    "note": "在b站上看的" // 备注，选填
-    "tags": [1,2,3] // tag标签，可看标签表，选填
+    "add_time": 17673770, // 用户点击添加的时间，必填
+    "note": "在b站上看的", // 备注，选填
+    "tags": [1,2,3], // tag标签，可看标签表，选填
 }
 ```
-
-[科目表MAP](#subject_map)
 
 [标签表MAP](#tag_map)
 
