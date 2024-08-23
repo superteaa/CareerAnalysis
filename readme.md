@@ -730,7 +730,9 @@ STUDY_TAG_MAP = map[int]string{
     "plan_name": "看了两小时黑马程序员",
     "spend_time": 1.2,
     "study_time": 17673868,
-    "subject": "HTML",
+    "subject_cat_key": "软件类",
+    "subject_key": "HTML",
+    "subject_sub_key": "前端开发",
     "tags": [
         1,
         2,
