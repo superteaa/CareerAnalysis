@@ -922,3 +922,99 @@ func ChangePlan(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"msg": "success"})
 }
+
+// 将 SUBJECT_MAP 转换为带有分类名称的格式
+func GetSubjectMap(c *gin.Context) {
+	// 定义分类名称映射
+	var CATEGORY_NAMES = map[int]string{
+		1: "软件类",
+		2: "硬件类",
+		3: "网络类",
+		4: "信息系统类",
+		5: "制造类",
+	}
+
+	// 定义子分类名称映射
+	var SUBCATEGORY_NAMES = map[int]map[int]string{
+		1: { // 软件类
+			1:  "编程语言",
+			2:  "前端开发",
+			3:  "后端开发框架",
+			4:  "数据库",
+			5:  "容器技术",
+			6:  "云计算",
+			7:  "测试工具",
+			8:  "版本控制",
+			9:  "操作系统",
+			10: "移动开发",
+		},
+		2: { // 硬件类
+			1:  "嵌入式系统",
+			2:  "硬件设计工具",
+			3:  "微处理器",
+			4:  "通信接口",
+			5:  "传感器技术",
+			6:  "电源管理",
+			7:  "嵌入式软件开发工具",
+			8:  "调试工具",
+			9:  "生产工艺",
+			10: "驱动程序开发",
+		},
+		3: { // 网络类
+			1: "网络协议",
+			2: "网络设备",
+			3: "网络监控工具",
+			4: "网络虚拟化",
+			5: "网络安全",
+			6: "无线通信技术",
+			7: "网络操作系统",
+			8: "云网络",
+		},
+		4: { // 信息系统类
+			1:  "ERP系统",
+			2:  "CRM系统",
+			3:  "数据仓库",
+			4:  "数据集成工具",
+			5:  "商业智能",
+			6:  "消息中间件",
+			7:  "身份管理",
+			8:  "大数据处理",
+			9:  "企业应用集成",
+			10: "内容管理系统",
+		},
+		5: { // 制造类
+			1: "自动化控制",
+			2: "工业机器人",
+			3: "嵌入式系统",
+			4: "CAD/CAM软件",
+			5: "工业物联网",
+		},
+	}
+	result := make(map[string]map[string][]string)
+
+	for categoryID, subcategories := range SUBJECT_MAP {
+		categoryName, categoryExists := CATEGORY_NAMES[categoryID]
+		if !categoryExists {
+			continue
+		}
+
+		subcategoryMap := make(map[string][]string)
+		for subcategoryID, subjects := range subcategories {
+			subcategoryName, subcategoryExists := SUBCATEGORY_NAMES[categoryID][subcategoryID]
+			if !subcategoryExists {
+				continue
+			}
+
+			var subjectMap []string
+			for _, subjectName := range subjects {
+				subjectMap = append(subjectMap, subjectName)
+			}
+
+			subcategoryMap[subcategoryName] = subjectMap
+		}
+
+		result[categoryName] = subcategoryMap
+	}
+
+	c.JSON(http.StatusOK, result)
+}

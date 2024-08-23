@@ -533,6 +533,160 @@ STUDY_TAG_MAP = map[int]string{
 
 
 
+## GetSubjectMap API
+
+### **接口描述**
+
+`GetSubjectMap` 接口获取用户学习记录列表。
+
+### **请求 URL**
+
+`GET /study/get-subject-map`
+
+### **请求头**
+
+- `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+    
+
+### **请求参数**
+
+```json
+无
+```
+
+### 请求示例
+
+`GET /study/get-subject-map`
+
+### **响应示例**
+
+- **成功响应**
+
+```json
+{
+    "信息系统类": {
+        "CRM系统": [
+            "HubSpot",
+            "Zoho CRM",
+            "SugarCRM",
+            "Dynamics CRM",
+            "Salesforce"
+        ],
+        "ERP系统": [
+            "SAP ERP",
+            "Oracle E-Business Suite",
+            "Microsoft Dynamics",
+            "Odoo",
+            "金蝶",
+            "用友"
+        ],
+        "企业应用集成": [
+            "MuleSoft",
+            "WSO2",
+            "Oracle SOA Suite",
+            "TIBCO BusinessWorks"
+        ],
+        "内容管理系统": [
+            "WordPress",
+            "Joomla!",
+            "Drupal",
+            "Wix",
+            "Squarespace"
+        ],
+        "商业智能": [
+            "Power BI",
+            "Looker",
+            "QlikView",
+            "Sisense",
+            "Tableau"
+        ],
+        "大数据处理": [
+            "NoSQL数据库",
+            "Apache Hadoop",
+            "Apache Spark",
+            "Flink",
+            "Presto",
+            "HDFS"
+        ],
+        "数据仓库": [
+            "Amazon Redshift",
+            "Google BigQuery",
+            "Snowflake",
+            "Apache Hive",
+            "Teradata"
+        ],
+        "数据集成工具": [
+            "Pentaho",
+            "Apache Nifi",
+            "Talend",
+            "Informatica",
+            "Microsoft SSIS"
+        ],
+        "消息中间件": [
+            "Apache Kafka",
+            "RabbitMQ",
+            "ActiveMQ",
+            "IBM MQ",
+            "Tibco"
+        ],
+        "身份管理": [
+            "LDAP",
+            "Active Directory",
+            "Okta",
+            "Auth0",
+            "AWS IAM"
+        ]
+    },
+    "制造类": {
+        "CAD/CAM软件": [
+            "CATIA",
+            "Siemens NX",
+            "AutoCAD",
+            "SolidWorks",
+            "Fusion 360"
+        ],
+        "嵌入式系统": [
+            "实时操作系统",
+            "工业控制单片机",
+            "嵌入式Linux",
+            "FreeRTOS"
+        ],
+        "工业机器人": [
+            "工业物联网",
+            "ROS",
+            "机械臂编程"
+        ],
+        "工业物联网": [
+            "OPC UA",
+            "MQTT",
+            "工业以太网",
+            "Profinet",
+            "Modbus"
+        ],
+        "自动化控制": [
+            "PLC编程",
+            "SCADA系统",
+            "DCS系统"
+        ]
+    },
+}
+```
+
+- **错误响应**
+
+```json
+{
+  "error": "错误信息" 
+}
+```
+
+
+
+
+
 ## GetPlanDetail API
 
 ### **接口描述**
