@@ -507,7 +507,7 @@ func (Study) TableName() string {
 }
 
 type AddPlanRequest struct {
-	PlanName      string        `json:"plan_name" binding:"required"`
+	PlanName      string        `json:"plan_name"`
 	SubjectCatKey string        `json:"subject_cat_key" binding:"required"`
 	SubjectSubKey string        `json:"subject_sub_key" binding:"required"`
 	SubjectKey    string        `json:"subject_key" binding:"required"`
