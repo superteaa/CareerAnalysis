@@ -336,11 +336,77 @@ var SUBJECT_MAP = map[int]map[int]map[int]string{
 	},
 }
 
+// 定义分类名称映射
+var CATEGORY_NAMES = map[int]string{
+	1: "软件类",
+	2: "硬件类",
+	3: "网络类",
+	4: "信息系统类",
+	5: "制造类",
+}
+
+// 定义子分类名称映射
+var SUBCATEGORY_NAMES = map[int]map[int]string{
+	1: { // 软件类
+		1:  "编程语言",
+		2:  "前端开发",
+		3:  "后端开发框架",
+		4:  "数据库",
+		5:  "容器技术",
+		6:  "云计算",
+		7:  "测试工具",
+		8:  "版本控制",
+		9:  "操作系统",
+		10: "移动开发",
+	},
+	2: { // 硬件类
+		1:  "嵌入式系统",
+		2:  "硬件设计工具",
+		3:  "微处理器",
+		4:  "通信接口",
+		5:  "传感器技术",
+		6:  "电源管理",
+		7:  "嵌入式软件开发工具",
+		8:  "调试工具",
+		9:  "生产工艺",
+		10: "驱动程序开发",
+	},
+	3: { // 网络类
+		1: "网络协议",
+		2: "网络设备",
+		3: "网络监控工具",
+		4: "网络虚拟化",
+		5: "网络安全",
+		6: "无线通信技术",
+		7: "网络操作系统",
+		8: "云网络",
+	},
+	4: { // 信息系统类
+		1:  "ERP系统",
+		2:  "CRM系统",
+		3:  "数据仓库",
+		4:  "数据集成工具",
+		5:  "商业智能",
+		6:  "消息中间件",
+		7:  "身份管理",
+		8:  "大数据处理",
+		9:  "企业应用集成",
+		10: "内容管理系统",
+	},
+	5: { // 制造类
+		1: "自动化控制",
+		2: "工业机器人",
+		3: "嵌入式系统",
+		4: "CAD/CAM软件",
+		5: "工业物联网",
+	},
+}
+
 func mapToID(category, subCategory, value string) (int, int, int) {
 	for catKey, subMap := range SUBJECT_MAP {
-		if catKeyName(catKey) == category {
+		if CATEGORY_NAMES[catKey] == category {
 			for subKey, valueMap := range subMap {
-				if subKeyName(catKey, subKey) == subCategory {
+				if SUBCATEGORY_NAMES[catKey][subKey] == subCategory {
 					for valueKey, valueName := range valueMap {
 						if valueName == value {
 							return catKey, subKey, valueKey
@@ -351,132 +417,6 @@ func mapToID(category, subCategory, value string) (int, int, int) {
 		}
 	}
 	return 0, 0, 0
-}
-
-// 辅助函数，用于获取分类的名称
-func catKeyName(catKey int) string {
-	switch catKey {
-	case 1:
-		return "软件类"
-	case 2:
-		return "硬件类"
-	case 3:
-		return "网络类"
-	case 4:
-		return "信息系统类"
-	case 5:
-		return "制造类"
-	default:
-		return ""
-	}
-}
-
-// 辅助函数，用于获取子分类的名称
-func subKeyName(catKey, subKey int) string {
-	switch catKey {
-	case 1:
-		switch subKey {
-		case 1:
-			return "编程语言"
-		case 2:
-			return "前端开发"
-		case 3:
-			return "后端开发框架"
-		case 4:
-			return "数据库"
-		case 5:
-			return "容器技术"
-		case 6:
-			return "云计算"
-		case 7:
-			return "测试工具"
-		case 8:
-			return "版本控制"
-		case 9:
-			return "操作系统"
-		case 10:
-			return "移动开发"
-		}
-	case 2:
-		switch subKey {
-		case 1:
-			return "嵌入式系统"
-		case 2:
-			return "硬件设计工具"
-		case 3:
-			return "微处理器"
-		case 4:
-			return "通信接口"
-		case 5:
-			return "传感器技术"
-		case 6:
-			return "电源管理"
-		case 7:
-			return "嵌入式软件开发工具"
-		case 8:
-			return "调试工具"
-		case 9:
-			return "生产工艺"
-		case 10:
-			return "驱动程序开发"
-		}
-	case 3:
-		switch subKey {
-		case 1:
-			return "网络协议"
-		case 2:
-			return "网络设备"
-		case 3:
-			return "网络监控工具"
-		case 4:
-			return "网络虚拟化"
-		case 5:
-			return "网络安全"
-		case 6:
-			return "无线通信技术"
-		case 7:
-			return "网络操作系统"
-		case 8:
-			return "云网络"
-		}
-	case 4:
-		switch subKey {
-		case 1:
-			return "ERP系统"
-		case 2:
-			return "CRM系统"
-		case 3:
-			return "数据仓库"
-		case 4:
-			return "数据集成工具"
-		case 5:
-			return "商业智能"
-		case 6:
-			return "消息中间件"
-		case 7:
-			return "身份管理"
-		case 8:
-			return "大数据处理"
-		case 9:
-			return "企业应用集成"
-		case 10:
-			return "内容管理系统"
-		}
-	case 5:
-		switch subKey {
-		case 1:
-			return "自动化控制"
-		case 2:
-			return "工业机器人"
-		case 3:
-			return "嵌入式系统"
-		case 4:
-			return "CAD/CAM软件"
-		case 5:
-			return "工业物联网"
-		}
-	}
-	return ""
 }
 
 // func main() {
@@ -790,6 +730,10 @@ func GetPlanDetail(c *gin.Context) {
 	}
 
 	plan_id := c.Query("plan_id")
+	if plan_id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "参数格式错误"})
+		return
+	}
 	var planDetail Study
 	db := baseClass.GetDB()
 	if db_result := db.Where("id = ?", plan_id).First(&planDetail); db_result.Error != nil {
@@ -818,16 +762,18 @@ func GetPlanDetail(c *gin.Context) {
 	}
 
 	// 获取学科名称
-	subjectName := SUBJECT_MAP[planDetail.SubjectCatKey][planDetail.SubjectSubKey][planDetail.SubjectKey]
+	// subjectName := SUBJECT_MAP[planDetail.SubjectCatKey][planDetail.SubjectSubKey][planDetail.SubjectKey]
 
 	result := map[string]interface{}{
-		"plan_id":    planDetail.ID,
-		"plan_name":  planDetail.PlanName,
-		"subject":    subjectName,
-		"study_time": planDetail.StudyTime,
-		"spend_time": planDetail.Spend_Time,
-		"note":       planDetail.Note,
-		"tags":       intSlice,
+		"plan_id":         planDetail.ID,
+		"plan_name":       planDetail.PlanName,
+		"subject_cat_key": CATEGORY_NAMES[planDetail.SubjectCatKey],
+		"subject_sub_key": SUBCATEGORY_NAMES[planDetail.SubjectCatKey][planDetail.SubjectSubKey],
+		"subject_key":     SUBJECT_MAP[planDetail.SubjectCatKey][planDetail.SubjectSubKey][planDetail.SubjectKey],
+		"study_time":      planDetail.StudyTime,
+		"spend_time":      planDetail.Spend_Time,
+		"note":            planDetail.Note,
+		"tags":            intSlice,
 	}
 	c.JSON(http.StatusOK, result)
 }
@@ -925,71 +871,7 @@ func ChangePlan(c *gin.Context) {
 
 // 将 SUBJECT_MAP 转换为带有分类名称的格式
 func GetSubjectMap(c *gin.Context) {
-	// 定义分类名称映射
-	var CATEGORY_NAMES = map[int]string{
-		1: "软件类",
-		2: "硬件类",
-		3: "网络类",
-		4: "信息系统类",
-		5: "制造类",
-	}
 
-	// 定义子分类名称映射
-	var SUBCATEGORY_NAMES = map[int]map[int]string{
-		1: { // 软件类
-			1:  "编程语言",
-			2:  "前端开发",
-			3:  "后端开发框架",
-			4:  "数据库",
-			5:  "容器技术",
-			6:  "云计算",
-			7:  "测试工具",
-			8:  "版本控制",
-			9:  "操作系统",
-			10: "移动开发",
-		},
-		2: { // 硬件类
-			1:  "嵌入式系统",
-			2:  "硬件设计工具",
-			3:  "微处理器",
-			4:  "通信接口",
-			5:  "传感器技术",
-			6:  "电源管理",
-			7:  "嵌入式软件开发工具",
-			8:  "调试工具",
-			9:  "生产工艺",
-			10: "驱动程序开发",
-		},
-		3: { // 网络类
-			1: "网络协议",
-			2: "网络设备",
-			3: "网络监控工具",
-			4: "网络虚拟化",
-			5: "网络安全",
-			6: "无线通信技术",
-			7: "网络操作系统",
-			8: "云网络",
-		},
-		4: { // 信息系统类
-			1:  "ERP系统",
-			2:  "CRM系统",
-			3:  "数据仓库",
-			4:  "数据集成工具",
-			5:  "商业智能",
-			6:  "消息中间件",
-			7:  "身份管理",
-			8:  "大数据处理",
-			9:  "企业应用集成",
-			10: "内容管理系统",
-		},
-		5: { // 制造类
-			1: "自动化控制",
-			2: "工业机器人",
-			3: "嵌入式系统",
-			4: "CAD/CAM软件",
-			5: "工业物联网",
-		},
-	}
 	result := make(map[string]map[string][]string)
 
 	for categoryID, subcategories := range SUBJECT_MAP {
