@@ -900,3 +900,76 @@ func GetSubjectMap(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
+
+func GetSkillTree(c *gin.Context) {
+	// 获取用户ID
+	userID, exists := c.Get("userID")
+	if !exists {
+		log.Println("GetSkillTree: 鉴权失败，用户不存在")
+		c.JSON(http.StatusOK, gin.H{"error": "用户不存在"})
+		return
+	}
+
+	type LearnedSkill struct {
+		SubjectCatKey int     `gorm:"column:subject_cat_key" json:"subject_cat_key"`
+		SubjectSubKey int     `gorm:"column:subject_sub_key" json:"subject_sub_key"`
+		SubjectKey    int     `gorm:"column:subject_key" json:"subject_key"`
+		SpendTime     float64 `gorm:"column:spend_time" json:"spend_time"`
+	}
+
+	// 查询有学习记录的科目
+	var learnedSkills []LearnedSkill
+	db := baseClass.GetDB()
+	db.Raw("SELECT subject_cat_key, subject_sub_key, subject_key, spend_time FROM study_plans WHERE user_id = ? AND spend_time > 0", userID).Scan(&learnedSkills)
+
+	// 组织返回数据
+	result := make(map[string]map[string][]string)
+
+	for _, skill := range learnedSkills {
+		// 获取分类名
+		categoryName, categoryExists := CATEGORY_NAMES[skill.SubjectCatKey]
+		if !categoryExists {
+			continue
+		}
+
+		// 获取子分类名
+		subcategoryName, subcategoryExists := SUBCATEGORY_NAMES[skill.SubjectCatKey][skill.SubjectSubKey]
+		if !subcategoryExists {
+			continue
+		}
+
+		// 获取科目名称
+		subjectName, subjectExists := SUBJECT_MAP[skill.SubjectCatKey][skill.SubjectSubKey][skill.SubjectKey]
+		if !subjectExists {
+			continue
+		}
+
+		// 如果分类不存在则初始化
+		if _, exists := result[categoryName]; !exists {
+			result[categoryName] = make(map[string][]string)
+		}
+
+		// 如果子分类不存在则初始化
+		if _, exists := result[categoryName][subcategoryName]; !exists {
+			result[categoryName][subcategoryName] = []string{}
+		}
+
+		// 检查是否已经存在该科目名称
+		if !contains(result[categoryName][subcategoryName], subjectName) {
+			result[categoryName][subcategoryName] = append(result[categoryName][subcategoryName], subjectName)
+		}
+
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
+// 辅助函数，用于检查切片中是否包含特定元素
+func contains(slice []string, item string) bool {
+	for _, v := range slice {
+		if v == item {
+			return true
+		}
+	}
+	return false
+}

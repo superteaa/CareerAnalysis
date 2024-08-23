@@ -685,6 +685,63 @@ STUDY_TAG_MAP = map[int]string{
 
 
 
+## GetLearnedMap API
+
+### **接口描述**
+
+`GetSubjectMap` 接口获取用户学习记录列表。
+
+### **请求 URL**
+
+`GET /study/get-learned-map`
+
+### **请求头**
+
+- `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+    
+
+### **请求参数**
+
+```json
+无
+```
+
+### 请求示例
+
+`GET /study/get-learned-map`
+
+### **响应示例**
+
+- **成功响应**
+
+```json
+{
+    "硬件类": {
+        "通信接口": [
+            "Ethernet"
+        ]
+    },
+    "软件类": {
+        "前端开发": [
+            "HTML"
+        ]
+    }
+}
+```
+
+- **错误响应**
+
+```json
+{
+  "error": "错误信息" 
+}
+```
+
+
+
 
 
 ## GetPlanDetail API
