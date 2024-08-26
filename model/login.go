@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -56,7 +57,23 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	avatarURL := fmt.Sprintf("/uploads/%s.jpg", user.Email)
+	// 支持的图片类型
+	supportedExtensions := []string{".jpg", ".png", ".gif"}
+	var avatarURL string
+
+	// 遍历每种后缀，查找是否存在相应的文件
+	for _, ext := range supportedExtensions {
+		filePath := fmt.Sprintf("./uploads/%s%s", request.Email, ext)
+		if _, err := os.Stat(filePath); err == nil {
+			avatarURL = fmt.Sprintf("/uploads/%s%s", request.Email, ext)
+			break
+		}
+	}
+
+	// 如果没有找到头像文件，可以返回一个默认头像 URL
+	if avatarURL == "" {
+		avatarURL = "/uploads/default-avatar.png" // 默认头像路径
+	}
 
 	if user.Token == "" {
 		// 生成JWT会话令牌
@@ -78,14 +95,14 @@ func Signup(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 	email := c.PostForm("email")
-	captchaId := c.PostForm("captchaId")
-	value := c.PostForm("value")
+	// captchaId := c.PostForm("captchaId")
+	// value := c.PostForm("value")
 
-	// 验证验证码
-	if !Verifycaptcha(captchaId, value) {
-		c.JSON(http.StatusOK, gin.H{"error": "Invalid captcha"})
-		return
-	}
+	// // 验证验证码
+	// if !Verifycaptcha(captchaId, value) {
+	// 	c.JSON(http.StatusOK, gin.H{"error": "Invalid captcha"})
+	// 	return
+	// }
 
 	// 处理头像上传
 	file, err := c.FormFile("avatar")
@@ -95,10 +112,51 @@ func Signup(c *gin.Context) {
 		return
 	}
 
+	// 打开文件并读取文件头部信息
+	src, err := file.Open()
+	if err != nil {
+		log.Println("Failed to open uploaded file:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
+		return
+	}
+	defer src.Close()
+
+	// 读取文件的 MIME 类型
+	buffer := make([]byte, 512)
+	if _, err := src.Read(buffer); err != nil {
+		log.Println("Failed to read file header:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
+		return
+	}
+	fileType := http.DetectContentType(buffer)
+
+	// 根据 MIME 类型设置文件后缀
+	var fileExt string
+	switch fileType {
+	case "image/jpeg":
+		fileExt = ".jpg"
+	case "image/png":
+		fileExt = ".png"
+	case "image/gif":
+		fileExt = ".gif"
+	default:
+		log.Println("Unsupported file type:", fileType)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Unsupported file type"})
+		return
+	}
+
+	// 回到文件开头读取全部数据
+	if _, err := src.Seek(0, 0); err != nil {
+		log.Println("Failed to seek file:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
+		return
+	}
+
 	// 保存头像到服务器（假设保存到 "uploads/" 目录）
-	avatarPath := fmt.Sprintf("/uploads/%s.jpg", email)
-	if err := c.SaveUploadedFile(file, "."+avatarPath); err != nil {
-		log.Println("signup: ", err)
+	avatarPath := fmt.Sprintf("./uploads/%s%s", email, fileExt)
+	avatarURL := fmt.Sprintf("/uploads/%s%s", email, fileExt)
+	if err := c.SaveUploadedFile(file, avatarPath); err != nil {
+		log.Println("Failed to save avatar:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save avatar"})
 		return
 	}
@@ -136,5 +194,5 @@ func Signup(c *gin.Context) {
 	db.Model(&newUser).Update("token", sessionToken)
 
 	// 返回成功响应
-	c.JSON(http.StatusOK, gin.H{"message": "User signup successfully", "session_token": sessionToken, "username": newUser.Username, "avatar": avatarPath})
+	c.JSON(http.StatusOK, gin.H{"message": "User signup successfully", "session_token": sessionToken, "username": newUser.Username, "avatar": avatarURL})
 }
