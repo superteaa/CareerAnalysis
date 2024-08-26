@@ -95,5 +95,10 @@ func main() {
 
 	// })
 	LoadConfig()
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Current directory:", dir)
 	r.Run(":" + config.Server.Port) // 监听并启动服务
 }
