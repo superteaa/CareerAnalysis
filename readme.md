@@ -22,7 +22,9 @@
 ```json
 {
     "message": "Login successful",
-    "session_token": "string"  // 会话令牌
+    "session_token": "string",  // 会话令牌
+    "avatar": "/uploads/88888feg.jpg", // 头像链接
+    "username": "ghjghggt" // 用户名
 }
 ```
 
@@ -66,7 +68,7 @@ curl -X POST "http://localhost:8080/login" -H "Content-Type: application/json" -
 ### URL
 `POST /signup`
 
-### 请求参数
+### 请求参数（form-data）
 ```json
 {
     "username": "string",  // 用户名，必填
@@ -77,12 +79,18 @@ curl -X POST "http://localhost:8080/login" -H "Content-Type: application/json" -
 }
 ```
 
+![alt text](asset/微信图片_20240826182227.png)
+
 ### 响应参数
 - 成功响应
 ```json
 {
+    {
+    "avatar": "/uploads/88888feg.jpg",  // 头像链接
     "message": "User signup successfully",
-    "session_token": "string"  // 会话令牌
+    "session_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMywiZXhwIjo3NzI0NjY3NDE2fQ.fxnwUrmmnhK8fnVapOBCV9dv1YVkfGs2A1IhO4E0DCk",
+    "username": "ghjghggt"  // 用户名
+	}
 }
 ```
 
@@ -93,7 +101,7 @@ curl -X POST "http://localhost:8080/login" -H "Content-Type: application/json" -
 }
 或
 {
-    "error": "Username already exists" // 用户名已存在
+    "error": "Email already exists" // 邮箱已存在
 }
 或
 {
@@ -102,6 +110,9 @@ curl -X POST "http://localhost:8080/login" -H "Content-Type: application/json" -
 或
 {
     "error": "Failed to create session"  // 创建会话失败
+}
+{
+    "error": "Avatar upload failed" // 图片上传失败
 }
 ```
 
@@ -1066,31 +1077,57 @@ GET /news/get-detail?news_id=12
     {
         "commen_list": [
             {
-                "body": "经历了今年的秋招，感觉目前通信行业确实陷入了周期性的寒冬，反而计算机相关的行业蓬勃发展，作为一个已经入坑的通信人只能期待5G能带给我们一点红利了。",
+                "addtime": 1719851626,
+                "body": "通信工程是一门技术背景比较复杂的专业，发展变化之大需要更多深入的学习和了解才能掌握。只有真实掌握了前沿的技术知识、行业动态，才能在行业内有所成就，避免成为职场的IT民工。",
                 "comment_id": 1,
                 "star": 3,
-                "title": "周期性的寒冬",
+                "title": "通信工程",
                 "user": "精神孟家人"
             },
             {
-                "body": "主要是数电、模电、高频电子线路、信号与系统、数字信号处理、嵌入式开发，单片机等。再往前就是微电子、半导体、集成电路。现在没什么纯硬件，都是软件驱动硬件，搞软硬结合。所以说，硬件专业=硬件+软件。",
+                "addtime": 1723285808,
+                "body": "薪酬待遇由于学历，毕业学校等原因不太好说，但总体而言相对众多专业算很高了。大厂的薪资待遇网上也能查到。",
                 "comment_id": 2,
                 "star": 2,
-                "title": "搞电子",
+                "title": "不错不错",
                 "user": "zzz"
+            },
+            {
+                "addtime": 1719428442,
+                "body": "这个行业也挺卷的，尤其是国内，高薪也意味着更高强度的工作，所以量力而行。",
+                "comment_id": 4,
+                "star": 4,
+                "title": "行业挺卷的",
+                "user": "爱吃猫的鱼儿"
+            },
+            {
+                "addtime": 1720545891,
+                "body": "如果想要在通信行业就业，建议深入学习专业课程，读完研究生后再就业;如果想进入互联网大厂技术团队，建议充分了解互联网技术趋势，寻找未来有潜力的一两门技术深入钻研;其他行业的T部门对于专业来说不是一个特别的理想的选择，但是每个行业也有其独特之处，可以在技术方面以外多了解主营业务，避免因在技术围墙中走不出来。",
+                "comment_id": 9,
+                "star": 5,
+                "title": "深入学习专业课程",
+                "user": "平平淡淡"
+            },
+            {
+                "addtime": 1722708912,
+                "body": "理面上，如果平时对企业主营业务了解比较多的话，在管理岗位到达一定级别后，因为技术背景的优势，转往其他部门管理岗位或者更高层的可能也是比较高的。现状和发展前景都不错，尤其现在是信息科学发展迅速，国家的支持和市场的需求都很大。",
+                "comment_id": 10,
+                "star": 5,
+                "title": "需求大",
+                "user": "11122"
             }
         ],
         "major_info": {
-            "intro": "通信工程，英文名Communication Engineering，是电子工程的一个重要分支，也是电子信息类 子专业，更是一门重要的基础学科。",
+            "intro": "通信工程主要研究通信技术、通信系统和通信网等方面的基础理论、组成原理和设计方法等，从而进行现代通信系统和网络的设计、开发、调测和应用等。例如：移动通信由2G/3G到4G的开发，电话网、电报网等通信网的系统设计，无线局域网（WiFi）的开发与维护等。",
             "major_id": 1,
             "name": "通信工程",
-            "pic_url": "https://jf-open-prod-1301446188.cos.ap-guangzhou.myqcloud.com/media/S/23/0318/De58KONES8-WEVdYzFvu5jJS.jpg"
+            "pic_url": "https://i.pinimg.com/564x/e1/7b/14/e17b146fad5c261534899a6105ed5288.jpg"
         }
     }
     ```
-
+  
   - **失败**：
-
+  
     ```json
     {
       "error": "查询数据库失败" //具体错误信息，如“major_id不能为空”，“major_id不能为空”

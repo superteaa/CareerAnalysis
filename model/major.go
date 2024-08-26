@@ -30,6 +30,7 @@ type Comment struct {
 	Com_Title string
 	Com_Body  string
 	Star_Num  int
+	AddTime   int `gorm:"column:addtime"`
 }
 
 var MAJOR_TYPE_MAP = map[int]string{
@@ -125,13 +126,15 @@ func GetMajorDetail(c *gin.Context) {
 
 	var commentListMap []map[string]interface{}
 	for _, comment := range comments {
+		log.Println(comment.AddTime)
 		commentMap := map[string]interface{}{
 			"comment_id": comment.ID,
 			"user":       comment.Com_User,
 			"title":      comment.Com_Title,
 			// "Body":  new.Body,
-			"body": comment.Com_Body,
-			"star": comment.Star_Num,
+			"body":    comment.Com_Body,
+			"star":    comment.Star_Num,
+			"addtime": comment.AddTime,
 		}
 		commentListMap = append(commentListMap, commentMap)
 	}

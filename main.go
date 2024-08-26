@@ -48,6 +48,7 @@ func main() {
 
 	r.POST("/login", model.Login)
 	r.POST("/signup", model.Signup)
+	r.POST("/upload_avatar")
 	r.GET("/captcha/:captchaId", model.Getcaptchaimg)
 	r.GET("/captcha", model.Createcaptchaid)
 	authorized := r.Group("/")
