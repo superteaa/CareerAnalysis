@@ -46,13 +46,13 @@ func Login(c *gin.Context) {
 	db := baseClass.GetDB()
 
 	var user User
-	if err := db.Where("username = ?", request.Email).First(&user).Error; err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": "Username does not exist"})
+	if err := db.Where("email = ?", request.Email).First(&user).Error; err != nil {
+		c.JSON(http.StatusOK, gin.H{"error": "User does not exist"})
 		return
 	}
 
 	if !CheckPassword(request.Password, user.Password) {
-		c.JSON(http.StatusOK, gin.H{"error": "Username and password do not match"})
+		c.JSON(http.StatusOK, gin.H{"error": "Email and password do not match"})
 		return
 	}
 
