@@ -43,6 +43,9 @@ func main() {
 	baseClass.InitDB()
 
 	r := gin.Default()
+
+	r.Static("/uploads", "./uploads")
+
 	r.POST("/login", model.Login)
 	r.POST("/signup", model.Signup)
 	r.GET("/captcha/:captchaId", model.Getcaptchaimg)
