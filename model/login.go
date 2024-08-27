@@ -141,8 +141,7 @@ func Signup(c *gin.Context) {
 		fileExt = ".gif"
 	default:
 		log.Println("Unsupported file type:", fileType)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Unsupported file type"})
-		return
+		fileExt = ".png"
 	}
 
 	// 回到文件开头读取全部数据
