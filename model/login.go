@@ -95,14 +95,14 @@ func Signup(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 	email := c.PostForm("email")
-	// captchaId := c.PostForm("captchaId")
-	// value := c.PostForm("value")
+	captchaId := c.PostForm("captchaId")
+	value := c.PostForm("value")
 
-	// // 验证验证码
-	// if !Verifycaptcha(captchaId, value) {
-	// 	c.JSON(http.StatusOK, gin.H{"error": "Invalid captcha"})
-	// 	return
-	// }
+	// 验证验证码
+	if !Verifycaptcha(captchaId, value) {
+		c.JSON(http.StatusOK, gin.H{"error": "Invalid captcha"})
+		return
+	}
 
 	var avatarURL string
 	files := c.Request.MultipartForm.File["files"]
