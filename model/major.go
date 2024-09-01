@@ -4,6 +4,7 @@ import (
 	"CareerAnalysis/baseClass"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -138,6 +139,11 @@ func GetMajorDetail(c *gin.Context) {
 		}
 		commentListMap = append(commentListMap, commentMap)
 	}
+
+	// 按照 addtime 从大到小排序
+	sort.Slice(commentListMap, func(i, j int) bool {
+		return commentListMap[i]["addtime"].(int) > commentListMap[j]["addtime"].(int)
+	})
 
 	c.JSON(http.StatusOK, gin.H{
 		"major_info":  majorDetailMap,
