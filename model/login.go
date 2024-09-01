@@ -104,61 +104,57 @@ func Signup(c *gin.Context) {
 		return
 	}
 
-	// 处理头像上传
-	file, err := c.FormFile("avatar")
-	if err != nil {
-		log.Println("signup: ", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Avatar upload failed"})
-		return
-	}
+	var avatarURL string
+	files := c.Request.MultipartForm.File["files"]
+	if len(files) != 0 {
+		file := files[0]
+		// 打开文件并读取文件头部信息
+		src, err := file.Open()
+		if err != nil {
+			log.Println("Failed to open uploaded file:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
+			return
+		}
+		defer src.Close()
 
-	// 打开文件并读取文件头部信息
-	src, err := file.Open()
-	if err != nil {
-		log.Println("Failed to open uploaded file:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
-		return
-	}
-	defer src.Close()
+		// 读取文件的 MIME 类型
+		buffer := make([]byte, 512)
+		if _, err := src.Read(buffer); err != nil {
+			log.Println("Failed to read file header:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
+			return
+		}
+		fileType := http.DetectContentType(buffer)
 
-	// 读取文件的 MIME 类型
-	buffer := make([]byte, 512)
-	if _, err := src.Read(buffer); err != nil {
-		log.Println("Failed to read file header:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
-		return
-	}
-	fileType := http.DetectContentType(buffer)
+		// 根据 MIME 类型设置文件后缀
+		var fileExt string
+		switch fileType {
+		case "image/jpeg":
+			fileExt = ".jpg"
+		case "image/png":
+			fileExt = ".png"
+		case "image/gif":
+			fileExt = ".gif"
+		default:
+			log.Println("Unsupported file type:", fileType)
+			fileExt = ".png"
+		}
 
-	// 根据 MIME 类型设置文件后缀
-	var fileExt string
-	switch fileType {
-	case "image/jpeg":
-		fileExt = ".jpg"
-	case "image/png":
-		fileExt = ".png"
-	case "image/gif":
-		fileExt = ".gif"
-	default:
-		log.Println("Unsupported file type:", fileType)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Unsupported file type"})
-		return
-	}
+		// 回到文件开头读取全部数据
+		if _, err := src.Seek(0, 0); err != nil {
+			log.Println("Failed to seek file:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
+			return
+		}
 
-	// 回到文件开头读取全部数据
-	if _, err := src.Seek(0, 0); err != nil {
-		log.Println("Failed to seek file:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
-		return
-	}
-
-	// 保存头像到服务器（假设保存到 "uploads/" 目录）
-	avatarPath := fmt.Sprintf("./uploads/%s%s", email, fileExt)
-	avatarURL := fmt.Sprintf("/uploads/%s%s", email, fileExt)
-	if err := c.SaveUploadedFile(file, avatarPath); err != nil {
-		log.Println("Failed to save avatar:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save avatar"})
-		return
+		// 保存头像到服务器（假设保存到 "uploads/" 目录）
+		avatarPath := fmt.Sprintf("./uploads/%s%s", email, fileExt)
+		avatarURL = fmt.Sprintf("/uploads/%s%s", email, fileExt)
+		if err := c.SaveUploadedFile(file, avatarPath); err != nil {
+			log.Println("Failed to save avatar:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save avatar"})
+			return
+		}
 	}
 
 	// 初始化数据库连接
