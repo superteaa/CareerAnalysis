@@ -65,14 +65,16 @@ func main() {
 	authorized := r.Group("/")
 	authorized.Use(baseClass.ValidateJWT())
 	{
-		// question_r := authorized.Group("/question")
-		// {
-		// 	// question_r.GET("/roles", model.SelectRole)
-		// 	question_r.POST("/submit", model.DealQ)
-		// }
+		question_r := authorized.Group("/question")
+		{
+			// question_r.GET("/roles", model.SelectRole)
+			question_r.POST("/submit", model.DealQ)
+
+		}
 		job_r := authorized.Group("/job")
 		{
 			job_r.GET("/get-list", model.GetJobList)
+			job_r.GET("/get-recomment", model.GetRecomment)
 		}
 		study_r := authorized.Group("/study")
 		{

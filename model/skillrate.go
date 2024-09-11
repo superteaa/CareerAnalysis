@@ -4,6 +4,8 @@ import (
 	"CareerAnalysis/baseClass"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -140,4 +142,62 @@ func GetJobList(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, result)
+}
+
+func GetRecomment(c *gin.Context) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("发生异常:", r)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误"})
+		}
+	}()
+
+	userID, exists := c.Get("userID")
+	if !exists {
+		log.Println("DealQ:", "鉴权失败，用户不存在")
+		c.JSON(http.StatusOK, gin.H{"error": "用户不存在"})
+		return
+	}
+	var recomment_jobs struct {
+		Job_arr string
+		User_id int
+	}
+
+	db := baseClass.GetDB()
+	tx := db.Begin()
+	if db_result := tx.Table("recomment_jobs").Where("user_id = ?", userID).First(&recomment_jobs); db_result.Error == nil {
+		strSlice := strings.Split(recomment_jobs.Job_arr, ",")
+
+		// 将切片中的字符串转换为整数切片
+		var intSlice []int
+		for _, str := range strSlice {
+			num, err := strconv.Atoi(str)
+			if err != nil {
+				log.Println("字符串转数组错误：", err)
+			}
+			intSlice = append(intSlice, num)
+		}
+
+		var result []map[string]interface{}
+		for _, job := range intSlice {
+			var job_info struct {
+				Id   int
+				Type int
+			}
+			tx.Table("jobs").Where("id = ?", job).First(&job_info)
+			jobListMap := map[string]interface{}{
+				"job_id":      job,
+				"job_type":    JOB_TYPE_MAP[job_info.Type],
+				"job_type_id": job_info.Type,
+				"job_name":    JOB_NAME_MAP[job],
+			}
+			result = append(result, jobListMap)
+		}
+		tx.Commit()
+		c.JSON(http.StatusOK, result)
+		return
+	} else {
+		c.JSON(http.StatusOK, gin.H{"error": "无法找到用户数据"})
+		return
+	}
 }
