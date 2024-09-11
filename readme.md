@@ -1168,13 +1168,13 @@ GET /major/get-detail?major_id=1
 
 #### **请求参数**：
 
-  - `major_id`
-      - 在获取专业列表时，返回的major_id
+  - `job_id`
+      - 在获取岗位列表时 (/job/get-list)，返回的job_id
 
 #### 请求示例
 
 ```
-GET /data/get-detail?major_id=3
+GET /data/get-detail?job_id=3
 ```
 
 ### **响应**
@@ -1384,6 +1384,70 @@ GET /job/get-recomment
     ```json
     {
       "error": "无法找到用户数据" // 用户没填那个表单
+    }
+    ```
+
+
+---
+
+
+
+# 提交岗位测试
+
+## 上交用户表单
+
+### **接口信息**
+
+- **URL**: `/question/submit`
+- **请求方式**: `POST`
+- **描述**: 上交用户表单。
+
+### **请求**
+
+#### **请求头**：
+
+ `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+#### 请求示例
+
+```
+POST /question/submit
+```
+
+```
+{  
+
+    "is_test":1,  
+
+    "data":[["A"",B"],["A","B","C","D"],"A","A","A","A"] 
+
+}
+```
+
+### **响应**
+
+- #### **状态码**:
+
+  - `200 OK`:
+  - `500 Internal Server Error`: 服务器内部发生错误。
+
+- #### **响应体**:
+
+  - #### **成功响应示例** (`200 OK`):
+
+    ```json
+    {
+        "msg": "success"
+    }
+    ```
+
+  - #### **错误响应示例** (`500 Internal Server Error`):
+
+    ```json
+    {
+      "error": "服务器内部错误"
     }
     ```
 
