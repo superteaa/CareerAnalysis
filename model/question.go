@@ -29,13 +29,66 @@ func DealQ(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Println("DealQ", err)
 		c.JSON(http.StatusOK, gin.H{"error": "Invalid request"})
 		return
 	}
 
 	if request.Is_Test != 1 {
-		c.JSON(http.StatusOK, "ok")
-		return
+		jobs_arr := request.Data
+
+		var strSlice []string
+
+		for _, item := range jobs_arr {
+			val, ok := item.(float64)
+			if !ok {
+				// 处理断言失败的情况
+				log.Println("类型断言失败，item不是int类型")
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
+				return
+			}
+			strSlice = append(strSlice, strconv.FormatInt(int64(val), 10))
+
+		}
+		jobsStr := strings.Join(strSlice, ",")
+
+		userID, exists := c.Get("userID")
+		if !exists {
+			log.Println("SelectJob:", "鉴权失败，用户不存在")
+			c.JSON(http.StatusOK, gin.H{"error": "用户不存在"})
+			return
+		}
+
+		recomment := map[string]interface{}{
+			"job_arr": jobsStr,
+			"user_id": int(userID.(uint32)),
+		}
+
+		db := baseClass.GetDB()
+		tx := db.Begin()
+
+		var existingRecord struct {
+			Job_arr string
+			User_id int
+		}
+
+		// 查询是否已存在相同的 user_id
+		if err := tx.Table("recomment_jobs").Where("user_id = ?", recomment["user_id"]).First(&existingRecord).Error; err == nil {
+			// 如果找到相同的 user_id
+			log.Println("SelectJob: 已存在user_id", recomment["user_id"])
+			tx.Rollback()
+			c.JSON(http.StatusConflict, gin.H{"error": "请勿重复提交"})
+			return
+		}
+		// 插入数据
+		if err := tx.Table("recomment_jobs").Create(&recomment).Error; err != nil {
+			log.Println("SelectJob:", err)
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
+			return
+		}
+		tx.Commit()
+		c.JSON(http.StatusOK, gin.H{"msg": "success"})
 	} else {
 		// 处理 Data 字段
 		jobs_map := make(map[int]bool) // 用于记录已添加的元素
@@ -206,62 +259,4 @@ func DealQ(c *gin.Context) {
 		tx.Commit()
 		c.JSON(http.StatusOK, gin.H{"msg": "success"})
 	}
-}
-
-func SelectJob(c *gin.Context) {
-	var request struct {
-		// Is_Test int           `json:"is_test" binding:"required"`
-		Data []int `json:"data" binding:"required"`
-	}
-
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": "Invalid request"})
-		return
-	}
-	jobs_arr := request.Data
-
-	var strSlice []string
-	for _, item := range jobs_arr {
-		strSlice = append(strSlice, strconv.FormatInt(int64(item), 10))
-
-	}
-	jobsStr := strings.Join(strSlice, ",")
-
-	userID, exists := c.Get("userID")
-	if !exists {
-		log.Println("SelectJob:", "鉴权失败，用户不存在")
-		c.JSON(http.StatusOK, gin.H{"error": "用户不存在"})
-		return
-	}
-
-	recomment := map[string]interface{}{
-		"job_arr": jobsStr,
-		"user_id": int(userID.(uint32)),
-	}
-
-	db := baseClass.GetDB()
-	tx := db.Begin()
-
-	var existingRecord struct {
-		Job_arr string
-		User_id int
-	}
-
-	// 查询是否已存在相同的 user_id
-	if err := tx.Table("recomment_jobs").Where("user_id = ?", recomment["user_id"]).First(&existingRecord).Error; err == nil {
-		// 如果找到相同的 user_id
-		log.Println("SelectJob: 已存在user_id", recomment["user_id"])
-		tx.Rollback()
-		c.JSON(http.StatusConflict, gin.H{"error": "请勿重复提交"})
-		return
-	}
-	// 插入数据
-	if err := tx.Table("recomment_jobs").Create(&recomment).Error; err != nil {
-		log.Println("SelectJob:", err)
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
-		return
-	}
-	tx.Commit()
-	c.JSON(http.StatusOK, gin.H{"msg": "success"})
 }

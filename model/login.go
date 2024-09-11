@@ -75,6 +75,16 @@ func Login(c *gin.Context) {
 		avatarURL = "/uploads/default-avatar.png" // 默认头像路径
 	}
 
+	var is_test int
+
+	record := map[string]interface{}{}
+	db_result := db.Table("recomment_jobs").Where("user_id = ?", user.ID).Find(&record)
+	if db_result.RowsAffected == 0 {
+		is_test = 2
+	} else {
+		is_test = 1
+	}
+
 	if user.Token == "" {
 		// 生成JWT会话令牌
 		sessionToken, err := baseClass.GenerateJWT(user.ID)
@@ -82,10 +92,11 @@ func Login(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create session"})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "Login successful", "session_token": sessionToken, "username": user.Username, "avatar": avatarURL})
+
+		c.JSON(http.StatusOK, gin.H{"message": "Login successful", "session_token": sessionToken, "username": user.Username, "avatar": avatarURL, "is_test": is_test})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "session_token": user.Token, "username": user.Username, "avatar": avatarURL})
+	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "session_token": user.Token, "username": user.Username, "avatar": avatarURL, "is_test": is_test})
 
 }
 
