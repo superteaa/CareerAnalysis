@@ -69,7 +69,7 @@ func main() {
 		{
 			// question_r.GET("/roles", model.SelectRole)
 			question_r.POST("/submit", model.DealQ)
-
+			question_r.POST("/select", model.SelectJob)
 		}
 		job_r := authorized.Group("/job")
 		{
