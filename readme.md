@@ -1454,6 +1454,64 @@ POST /question/submit
 
 ---
 
+## 直接选感兴趣的岗位
+
+### **接口信息**
+
+- **URL**: `/question/select`
+- **请求方式**: `POST`
+- **描述**: 上交用户表单。
+
+### **请求**
+
+#### **请求头**：
+
+ `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+#### 请求示例
+
+```
+POST /question/select
+```
+
+```
+{  
+
+    "data":[1,2,3] 
+
+}
+```
+
+### **响应**
+
+- #### **状态码**:
+
+  - `200 OK`:
+  - `500 Internal Server Error`: 服务器内部发生错误。
+
+- #### **响应体**:
+
+  - #### **成功响应示例** (`200 OK`):
+
+    ```json
+    {
+        "msg": "success"
+    }
+    ```
+
+  - #### **错误响应示例** (`500 Internal Server Error`):
+
+    ```json
+    {
+      "error": "服务器内部错误"
+    }
+    ```
+
+
+---
+
 <br>
 <br>
 
