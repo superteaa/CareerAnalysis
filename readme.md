@@ -1254,6 +1254,142 @@ GET /data/get-detail?major_id=3
 
 ---
 
+# 岗位数据
+
+## 获取所有岗位的数据
+
+### **接口信息**
+
+- **URL**: `/job/get-list`
+- **请求方式**: `GET`
+- **描述**: 获取岗位数据。
+
+### **请求**
+
+#### **请求头**：
+
+ `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+#### 请求示例
+
+```
+GET /job/get-list
+```
+
+### **响应**
+
+- #### **状态码**:
+
+  - `200 OK`: 请求成功，岗位列表包含在响应体中返回。
+  - `500 Internal Server Error`: 服务器内部发生错误。
+
+- #### **响应体**:
+
+  - #### **成功响应示例** (`200 OK`):
+
+    ```json
+    [
+        {
+            "job_id": 1,
+            "job_name": "产品经理",
+            "job_type": "信息类",
+            "job_type_id": 1
+        },
+        {
+            "job_id": 2,
+            "job_name": "测试工程师",
+            "job_type": "信息类",
+            "job_type_id": 1
+        },
+        {
+            "job_id": 3,
+            "job_name": "后端工程师",
+            "job_type": "信息类",
+            "job_type_id": 1
+        },
+        {
+            "job_id": 4,
+            "job_name": "前端工程师",
+            "job_type": "信息类",
+            "job_type_id": 1
+        }
+    ]
+    ```
+
+  - #### **错误响应示例** (`500 Internal Server Error`):
+
+    ```json
+    {
+      "error": "服务器内部错误"
+    }
+    ```
+
+
+---
+
+## 获取推荐岗位的数据
+
+### **接口信息**
+
+- **URL**: `/job/get-recomment`
+- **请求方式**: `GET`
+- **描述**: 获取岗位数据。
+
+### **请求**
+
+#### **请求头**：
+
+ `Authorization: <token>`
+
+  - 用于用户鉴权的 JWT token
+
+#### 请求示例
+
+```
+GET /job/get-recomment
+```
+
+### **响应**
+
+- #### **状态码**:
+
+  - `200 OK`: 请求成功，岗位列表包含在响应体中返回。
+  - `500 Internal Server Error`: 服务器内部发生错误。
+
+- #### **响应体**:
+
+  - #### **成功响应示例** (`200 OK`):
+
+    ```json
+    [
+        {
+            "job_id": 3,
+            "job_name": "后端工程师",
+            "job_type": "工程类",
+            "job_type_id": 0
+        },
+        {
+            "job_id": 1,
+            "job_name": "产品经理",
+            "job_type": "工程类",
+            "job_type_id": 0
+        }
+    ]
+    ```
+
+  - #### **错误响应示例**:
+
+    ```json
+    {
+      "error": "无法找到用户数据" // 用户没填那个表单
+    }
+    ```
+
+
+---
+
 <br>
 <br>
 
