@@ -102,73 +102,7 @@ var SUBJECT_MAP = map[int]map[int]map[int]string{
 			4: "Flutter",
 		},
 	},
-	2: { // 硬件类
-		1: { // 嵌入式系统
-			1: "ARM",
-			2: "Raspberry Pi",
-			3: "Arduino",
-			4: "FPGA",
-			5: "STM32",
-			6: "ESP32",
-		},
-		2: { // 硬件设计工具
-			1: "Verilog",
-			2: "VHDL",
-			3: "Altium Designer",
-			4: "OrCAD",
-			5: "KiCad",
-			6: "Proteus",
-		},
-		3: { // 微处理器
-			1: "Intel x86",
-			2: "ARM Cortex",
-			3: "PIC",
-			4: "AVR",
-			5: "MSP430",
-		},
-		4: { // 通信接口
-			1: "UART",
-			2: "I2C",
-			3: "SPI",
-			4: "CAN",
-			5: "USB",
-			6: "Ethernet",
-		},
-		5: { // 传感器技术
-			1: "ADC/DAC",
-			2: "温度传感器",
-			3: "压力传感器",
-			4: "加速度计",
-			5: "陀螺仪",
-		},
-		6: { // 电源管理
-			1: "电池管理",
-			2: "电源调节",
-			3: "充电管理IC",
-		},
-		7: { // 嵌入式软件开发工具
-			1: "Keil",
-			2: "IAR Embedded Workbench",
-			3: "Atmel Studio",
-			4: "MPLAB",
-		},
-		8: { // 调试工具
-			1: "逻辑分析仪",
-			2: "示波器",
-			3: "JTAG调试器",
-			4: "ICE仿真器",
-		},
-		9: { // 生产工艺
-			1: "SMT",
-			2: "焊接技术",
-			3: "自动光学检测(AOI)",
-		},
-		10: { // 驱动程序开发
-			1: "驱动程序开发（Linux Kernel）",
-			2: "驱动程序开发（Windows Driver Model）",
-		},
-	},
-	3: { // 网络类
+	2: { // 网络类
 		1: { // 网络协议
 			1: "TCP/IP",
 			2: "HTTP/HTTPS",
@@ -229,7 +163,7 @@ var SUBJECT_MAP = map[int]map[int]map[int]string{
 			3: "DNS服务（AWS Route 53，Azure DNS）",
 		},
 	},
-	4: { // 信息系统类
+	3: { // 信息系统类
 		1: { // ERP系统
 			1: "SAP ERP",
 			2: "Oracle E-Business Suite",
@@ -302,47 +236,13 @@ var SUBJECT_MAP = map[int]map[int]map[int]string{
 			5: "Squarespace",
 		},
 	},
-	5: { // 制造类
-		1: { // 自动化控制
-			1: "PLC编程",
-			2: "SCADA系统",
-			3: "DCS系统",
-		},
-		2: { // 工业机器人
-			1: "机械臂编程",
-			2: "工业物联网",
-			3: "ROS",
-		},
-		3: { // 嵌入式系统
-			1: "实时操作系统",
-			2: "工业控制单片机",
-			3: "嵌入式Linux",
-			4: "FreeRTOS",
-		},
-		4: { // CAD/CAM软件
-			1: "AutoCAD",
-			2: "SolidWorks",
-			3: "Fusion 360",
-			4: "CATIA",
-			5: "Siemens NX",
-		},
-		5: { // 工业物联网
-			1: "OPC UA",
-			2: "MQTT",
-			3: "工业以太网",
-			4: "Profinet",
-			5: "Modbus",
-		},
-	},
 }
 
 // 定义分类名称映射
 var CATEGORY_NAMES = map[int]string{
 	1: "软件类",
-	2: "硬件类",
-	3: "网络类",
-	4: "信息系统类",
-	5: "制造类",
+	2: "网络类",
+	3: "信息系统类",
 }
 
 // 定义子分类名称映射
@@ -359,19 +259,7 @@ var SUBCATEGORY_NAMES = map[int]map[int]string{
 		9:  "操作系统",
 		10: "移动开发",
 	},
-	2: { // 硬件类
-		1:  "嵌入式系统",
-		2:  "硬件设计工具",
-		3:  "微处理器",
-		4:  "通信接口",
-		5:  "传感器技术",
-		6:  "电源管理",
-		7:  "嵌入式软件开发工具",
-		8:  "调试工具",
-		9:  "生产工艺",
-		10: "驱动程序开发",
-	},
-	3: { // 网络类
+	2: { // 网络类
 		1: "网络协议",
 		2: "网络设备",
 		3: "网络监控工具",
@@ -381,7 +269,7 @@ var SUBCATEGORY_NAMES = map[int]map[int]string{
 		7: "网络操作系统",
 		8: "云网络",
 	},
-	4: { // 信息系统类
+	3: { // 信息系统类
 		1:  "ERP系统",
 		2:  "CRM系统",
 		3:  "数据仓库",
@@ -392,13 +280,6 @@ var SUBCATEGORY_NAMES = map[int]map[int]string{
 		8:  "大数据处理",
 		9:  "企业应用集成",
 		10: "内容管理系统",
-	},
-	5: { // 制造类
-		1: "自动化控制",
-		2: "工业机器人",
-		3: "嵌入式系统",
-		4: "CAD/CAM软件",
-		5: "工业物联网",
 	},
 }
 

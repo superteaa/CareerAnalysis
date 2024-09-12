@@ -37,9 +37,7 @@ var JOB_NAME_MAP = map[int]string{
 	2: "测试工程师",
 	3: "后端工程师",
 	4: "前端工程师",
-	5: "网络工程",
-	6: "电子信息科学与技术",
-	7: "信息与计算科学",
+	5: "算法工程师",
 }
 
 func (SubjectRate) TableName() string {
