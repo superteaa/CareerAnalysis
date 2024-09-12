@@ -65,6 +65,7 @@ func main() {
 	authorized := r.Group("/")
 	authorized.Use(baseClass.ValidateJWT())
 	{
+		authorized.GET("/is-new", model.UpdateIsNew)
 		question_r := authorized.Group("/question")
 		{
 			// question_r.GET("/roles", model.SelectRole)

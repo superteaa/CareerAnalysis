@@ -18,6 +18,7 @@ type User struct {
 	Email    string `gorm:"uniqueIndex"`
 	Token    string
 	// Avatar   string
+	Is_new int
 }
 
 func (User) TableName() string {
@@ -93,10 +94,10 @@ func Login(c *gin.Context) {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "Login successful", "session_token": sessionToken, "username": user.Username, "avatar": avatarURL, "is_test": is_test})
+		c.JSON(http.StatusOK, gin.H{"message": "Login successful", "session_token": sessionToken, "username": user.Username, "avatar": avatarURL, "is_test": is_test, "is_new": user.Is_new})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "session_token": user.Token, "username": user.Username, "avatar": avatarURL, "is_test": is_test})
+	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "session_token": user.Token, "username": user.Username, "avatar": avatarURL, "is_test": is_test, "is_new": user.Is_new})
 
 }
 
@@ -184,6 +185,7 @@ func Signup(c *gin.Context) {
 		Password: password,
 		Email:    email,
 		// Avatar:   avatarPath,
+		Is_new: 1,
 	}
 
 	if err := db.Create(&newUser).Error; err != nil {
@@ -202,4 +204,28 @@ func Signup(c *gin.Context) {
 
 	// 返回成功响应
 	c.JSON(http.StatusOK, gin.H{"message": "User signup successfully", "session_token": sessionToken, "username": newUser.Username, "avatar": avatarURL})
+}
+
+func UpdateIsNew(c *gin.Context) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("发生异常:", r)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "服务器内部错误"})
+		}
+	}()
+
+	userID, exists := c.Get("userID")
+	if !exists {
+		log.Println("UpdateIsNew:", "鉴权失败，用户不存在")
+		c.JSON(http.StatusOK, gin.H{"error": "用户不存在"})
+		return
+	}
+
+	var user User
+	user.ID = int(userID.(uint32))
+	// 初始化数据库连接
+	db := baseClass.GetDB()
+	db.Model(&user).Update("is_new", 0)
+	log.Println("新用户完成引导userID:", user.ID)
+	c.JSON(http.StatusOK, gin.H{"msg": "success"})
 }
