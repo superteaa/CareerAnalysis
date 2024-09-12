@@ -287,9 +287,11 @@ STUDY_TAG_MAP = map[int]string{
 ```json
 {
     "plan_name": "看了两小时黑马程序员", // 名称，选填
-    "subject_cat_key": "软件类", // 必填
-    "subject_sub_key": "前端开发", // 必填
-    "subject_key": "HTML", // 必填
+    // "subject_cat_key": "软件类", // 必填
+    // "subject_sub_key": "前端开发", // 必填
+    // "subject_key": "HTML", // 必填
+    "job_id":1,  // 必填
+    "skill_id":122,  // 必填
     "study_time": 17673868, // 用户所填入的日期，必填
     "spend_time": 1.2, // 学习时长，以小时为单位，必填
     "add_time": 17673770, // 用户点击添加的时间，必填
@@ -579,111 +581,76 @@ STUDY_TAG_MAP = map[int]string{
 
 ```json
 {
-    "信息系统类": {
-        "CRM系统": [
-            "HubSpot",
-            "Zoho CRM",
-            "SugarCRM",
-            "Dynamics CRM",
-            "Salesforce"
-        ],
-        "ERP系统": [
-            "SAP ERP",
-            "Oracle E-Business Suite",
-            "Microsoft Dynamics",
-            "Odoo",
-            "金蝶",
-            "用友"
-        ],
-        "企业应用集成": [
-            "MuleSoft",
-            "WSO2",
-            "Oracle SOA Suite",
-            "TIBCO BusinessWorks"
-        ],
-        "内容管理系统": [
-            "WordPress",
-            "Joomla!",
-            "Drupal",
-            "Wix",
-            "Squarespace"
-        ],
-        "商业智能": [
-            "Power BI",
-            "Looker",
-            "QlikView",
-            "Sisense",
-            "Tableau"
-        ],
-        "大数据处理": [
-            "NoSQL数据库",
-            "Apache Hadoop",
-            "Apache Spark",
-            "Flink",
-            "Presto",
-            "HDFS"
-        ],
-        "数据仓库": [
-            "Amazon Redshift",
-            "Google BigQuery",
-            "Snowflake",
-            "Apache Hive",
-            "Teradata"
-        ],
-        "数据集成工具": [
-            "Pentaho",
-            "Apache Nifi",
-            "Talend",
-            "Informatica",
-            "Microsoft SSIS"
-        ],
-        "消息中间件": [
-            "Apache Kafka",
-            "RabbitMQ",
-            "ActiveMQ",
-            "IBM MQ",
-            "Tibco"
-        ],
-        "身份管理": [
-            "LDAP",
-            "Active Directory",
-            "Okta",
-            "Auth0",
-            "AWS IAM"
-        ]
+    "1": {
+        "job_name": "产品经理",
+        "skills": {
+            "105": "交互设计",
+            "106": "浏览器兼容性",
+            "107": "Sketch",
+            "108": "Figma",
+            "109": "Flutter",
+            "112": "人工智能",
+            "113": "数据清洗",
+            "115": "数据处理",
+            "116": "排版"
+        }
     },
-    "制造类": {
-        "CAD/CAM软件": [
-            "CATIA",
-            "Siemens NX",
-            "AutoCAD",
-            "SolidWorks",
-            "Fusion 360"
-        ],
-        "嵌入式系统": [
-            "实时操作系统",
-            "工业控制单片机",
-            "嵌入式Linux",
-            "FreeRTOS"
-        ],
-        "工业机器人": [
-            "工业物联网",
-            "ROS",
-            "机械臂编程"
-        ],
-        "工业物联网": [
-            "OPC UA",
-            "MQTT",
-            "工业以太网",
-            "Profinet",
-            "Modbus"
-        ],
-        "自动化控制": [
-            "PLC编程",
-            "SCADA系统",
-            "DCS系统"
-        ]
+    "2": {
+        "job_name": "测试工程师",
+        "skills": {
+            "120": "C",
+            "121": "单元测试",
+            "122": "性能测试",
+            "123": "MySQL",
+            "124": "Redis",
+            "126": "Nginx",
+            "128": "Git",
+            "129": "浏览器兼容性",
+            "130": "k8s"
+        }
     },
+    "3": {
+        "job_name": "后端工程师",
+        "skills": {
+            "132": "Python",
+            "133": "Java",
+            "134": "C",
+            "135": "PHP",
+            "136": "Go",
+            "137": "MySQL",
+            "138": "Redis",
+            "140": "Tomcat",
+            "141": "HTTP"
+        }
+    },
+    "4": {
+        "job_name": "前端工程师",
+        "skills": {
+            "143": "Node.js",
+            "145": "Swift",
+            "146": "Kotlin",
+            "147": "Git",
+            "148": "Vue.js",
+            "149": "React",
+            "152": "交互设计",
+            "155": "跨平台开发",
+            "156": "游戏引擎"
+        }
+    },
+    "5": {
+        "job_name": "算法工程师",
+        "skills": {
+            "158": "Python",
+            "159": "C",
+            "160": "人工智能",
+            "161": "深度学习框架",
+            "162": "TensorFlow",
+            "163": "PyTorch",
+            "164": "自然语言处理",
+            "165": "数据结构",
+            "166": "acm"
+        }
+    }
 }
 ```
 
@@ -799,9 +766,11 @@ STUDY_TAG_MAP = map[int]string{
     "plan_name": "看了两小时黑马程序员",
     "spend_time": 1.2,
     "study_time": 17673868,
-    "subject_cat_key": "软件类",
-    "subject_key": "HTML",
-    "subject_sub_key": "前端开发",
+    // "subject_cat_key": "软件类",
+    // "subject_key": "HTML",
+    // "subject_sub_key": "前端开发",
+    "job_name": "前端开发",
+    "skill_name": "javascript",
     "tags": [
         1,
         2,
@@ -843,9 +812,10 @@ STUDY_TAG_MAP = map[int]string{
 {
     "plan_id": 4, // 必填
     "plan_name": "看了两小时黑马程序员", // 名称，选填
-    "subject_cat_key": "软件类", // 必填
-    "subject_sub_key": "前端开发", // 必填
-    "subject_key": "HTML", // 必填
+    // "subject_cat_key": "软件类", // 必填
+    // "subject_sub_key": "前端开发", // 必填
+    "job_id": 1, // 必填
+    "skill_id": 122, // 必填
     "study_time": 17673868, // 用户所填入的日期，必填
     "spend_time": 1.2, // 学习时长，以小时为单位，必填
     "add_time": 17673770, // 用户点击添加的时间，必填

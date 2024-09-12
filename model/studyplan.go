@@ -18,6 +18,8 @@ type Study struct {
 	UserID   int    `gorm:"column:user_id"`
 	PlanName string `gorm:"column:plan_name" json:"plan_name"`
 	// SubjectID  int     `gorm:"column:subject_id" json:"subject_id"`
+	JobId         int     `gorm:"column:job_id"`
+	SkillId       int     `gorm:"column:skill_id"`
 	SubjectCatKey int     `gorm:"column:subject_cat_key"`
 	SubjectSubKey int     `gorm:"column:subject_sub_key"`
 	SubjectKey    int     `gorm:"column:subject_key"`
@@ -28,291 +30,11 @@ type Study struct {
 	Tags          string  `json:"tags"`                                // tag标签
 }
 
-var SUBJECT_MAP = map[int]map[int]map[int]string{
-	1: { // 软件类
-		1: { // 编程语言
-			1: "Java",
-			2: "Python",
-			3: "C++",
-			4: "JavaScript",
-			5: "Ruby",
-			6: "PHP",
-			7: "Go",
-		},
-		2: { // 前端开发
-			1: "HTML",
-			2: "CSS",
-			3: "JavaScript",
-			4: "Vue.js",
-			5: "React.js",
-			6: "webpack",
-			7: "vite",
-			8: "router",
-			9: "Bootstrap",
-		},
-		3: { // 后端开发框架
-			1: "Spring",
-			2: "Django",
-			3: "Express",
-			4: "Yii",
-			5: "Gin",
-		},
-		4: { // 数据库
-			1: "MySQL",
-			2: "PostgreSQL",
-			3: "MongoDB",
-			4: "Redis",
-			5: "Oracle",
-			6: "SQLite",
-			7: "SQL Server",
-		},
-		5: { // 容器技术
-			1: "Docker",
-			2: "Kubernetes",
-			3: "Jenkins",
-			4: "Terraform",
-		},
-		6: { // 云计算
-			1: "AWS",
-			2: "Azure",
-			3: "Google Cloud",
-			4: "OpenStack",
-			5: "Alibaba Cloud",
-		},
-		7: { // 测试工具
-			1: "Selenium",
-			2: "TestNG",
-			3: "Postman",
-			4: "Cucumber",
-		},
-		8: { // 版本控制
-			1: "Git",
-			2: "SVN",
-			3: "Mercurial",
-		},
-		9: { // 操作系统
-			1: "Linux",
-			2: "Windows",
-			3: "macOS",
-		},
-		10: { // 移动开发
-			1: "Android开发（Kotlin/Java）",
-			2: "iOS开发（Swift/Objective-C）",
-			3: "React Native",
-			4: "Flutter",
-		},
-	},
-	2: { // 网络类
-		1: { // 网络协议
-			1: "TCP/IP",
-			2: "HTTP/HTTPS",
-			3: "DNS",
-			4: "DHCP",
-			5: "BGP",
-			6: "OSPF",
-			7: "MPLS",
-		},
-		2: { // 网络设备
-			1: "路由器",
-			2: "交换机",
-			3: "防火墙",
-			4: "负载均衡器",
-			5: "VPN设备",
-		},
-		3: { // 网络监控工具
-			1: "Wireshark",
-			2: "Nagios",
-			3: "Zabbix",
-			4: "SolarWinds",
-			5: "Cacti",
-			6: "NetFlow",
-		},
-		4: { // 网络虚拟化
-			1: "SDN（软件定义网络）",
-			2: "NFV（网络功能虚拟化）",
-			3: "VLAN",
-			4: "VXLAN",
-		},
-		5: { // 网络安全
-			1: "防火墙",
-			2: "IDS/IPS",
-			3: "WAF（Web应用防火墙）",
-			4: "DDoS防护",
-			5: "VPN",
-			6: "SSL/TLS",
-			7: "加密技术",
-			8: "SOC（安全运营中心）",
-			9: "SIEM（安全信息和事件管理）",
-		},
-		6: { // 无线通信技术
-			1: "Wi-Fi",
-			2: "Bluetooth",
-			3: "ZigBee",
-			4: "LoRa",
-			5: "5G",
-		},
-		7: { // 网络操作系统
-			1: "Cisco IOS",
-			2: "Juniper Junos",
-			3: "Huawei VRP",
-			4: "Ansible（网络自动化）",
-		},
-		8: { // 云网络
-			1: "云端虚拟私有网络（VPC）",
-			2: "负载均衡",
-			3: "DNS服务（AWS Route 53，Azure DNS）",
-		},
-	},
-	3: { // 信息系统类
-		1: { // ERP系统
-			1: "SAP ERP",
-			2: "Oracle E-Business Suite",
-			3: "Microsoft Dynamics",
-			4: "Odoo",
-			5: "金蝶",
-			6: "用友",
-		},
-		2: { // CRM系统
-			1: "Salesforce",
-			2: "HubSpot",
-			3: "Zoho CRM",
-			4: "SugarCRM",
-			5: "Dynamics CRM",
-		},
-		3: { // 数据仓库
-			1: "Amazon Redshift",
-			2: "Google BigQuery",
-			3: "Snowflake",
-			4: "Apache Hive",
-			5: "Teradata",
-		},
-		4: { // 数据集成工具
-			1: "Apache Nifi",
-			2: "Talend",
-			3: "Informatica",
-			4: "Microsoft SSIS",
-			5: "Pentaho",
-		},
-		5: { // 商业智能
-			1: "Tableau",
-			2: "Power BI",
-			3: "Looker",
-			4: "QlikView",
-			5: "Sisense",
-		},
-		6: { // 消息中间件
-			1: "Apache Kafka",
-			2: "RabbitMQ",
-			3: "ActiveMQ",
-			4: "IBM MQ",
-			5: "Tibco",
-		},
-		7: { // 身份管理
-			1: "LDAP",
-			2: "Active Directory",
-			3: "Okta",
-			4: "Auth0",
-			5: "AWS IAM",
-		},
-		8: { // 大数据处理
-			1: "Apache Hadoop",
-			2: "Apache Spark",
-			3: "Flink",
-			4: "Presto",
-			5: "HDFS",
-			6: "NoSQL数据库",
-		},
-		9: { // 企业应用集成
-			2: "MuleSoft",
-			3: "WSO2",
-			4: "Oracle SOA Suite",
-			5: "TIBCO BusinessWorks",
-		},
-		10: { // 内容管理系统
-			1: "WordPress",
-			2: "Joomla!",
-			3: "Drupal",
-			4: "Wix",
-			5: "Squarespace",
-		},
-	},
+type Skill struct {
+	JobID     int    `gorm:"column:job_id"`
+	ID        int    `gorm:"column:id"`
+	SkillName string `gorm:"column:skill_name"`
 }
-
-// 定义分类名称映射
-var CATEGORY_NAMES = map[int]string{
-	1: "软件类",
-	2: "网络类",
-	3: "信息系统类",
-}
-
-// 定义子分类名称映射
-var SUBCATEGORY_NAMES = map[int]map[int]string{
-	1: { // 软件类
-		1:  "编程语言",
-		2:  "前端开发",
-		3:  "后端开发框架",
-		4:  "数据库",
-		5:  "容器技术",
-		6:  "云计算",
-		7:  "测试工具",
-		8:  "版本控制",
-		9:  "操作系统",
-		10: "移动开发",
-	},
-	2: { // 网络类
-		1: "网络协议",
-		2: "网络设备",
-		3: "网络监控工具",
-		4: "网络虚拟化",
-		5: "网络安全",
-		6: "无线通信技术",
-		7: "网络操作系统",
-		8: "云网络",
-	},
-	3: { // 信息系统类
-		1:  "ERP系统",
-		2:  "CRM系统",
-		3:  "数据仓库",
-		4:  "数据集成工具",
-		5:  "商业智能",
-		6:  "消息中间件",
-		7:  "身份管理",
-		8:  "大数据处理",
-		9:  "企业应用集成",
-		10: "内容管理系统",
-	},
-}
-
-func mapToID(category, subCategory, value string) (int, int, int) {
-	for catKey, subMap := range SUBJECT_MAP {
-		if CATEGORY_NAMES[catKey] == category {
-			for subKey, valueMap := range subMap {
-				if SUBCATEGORY_NAMES[catKey][subKey] == subCategory {
-					for valueKey, valueName := range valueMap {
-						if valueName == value {
-							return catKey, subKey, valueKey
-						}
-					}
-				}
-			}
-		}
-	}
-	return 0, 0, 0
-}
-
-// func main() {
-// 	// 示例用法
-// 	category := "软件类"
-// 	subCategory := "编程语言"
-// 	value := "Go"
-
-// 	catID, subID, valueID, err := mapToID(category, subCategory, value)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	} else {
-// 		fmt.Printf("Category ID: %d, SubCategory ID: %d, Value ID: %d\n", catID, subID, valueID)
-// 	}
-// }
 
 var STUDY_TAG_MAP = map[int]string{
 	1: "有问题",
@@ -328,15 +50,15 @@ func (Study) TableName() string {
 }
 
 type AddPlanRequest struct {
-	PlanName      string        `json:"plan_name"`
-	SubjectCatKey string        `json:"subject_cat_key" binding:"required"`
-	SubjectSubKey string        `json:"subject_sub_key" binding:"required"`
-	SubjectKey    string        `json:"subject_key" binding:"required"`
-	StudyTime     int           `json:"study_time" binding:"required"`
-	SpendTime     float64       `json:"spend_time" binding:"required"`
-	AddTime       int           `json:"add_time" binding:"required"`
-	Note          string        `json:"note"`
-	Tags          []interface{} `json:"tags"`
+	PlanName string `json:"plan_name"`
+	JobId    int    `json:"job_id" binding:"required"`
+	SkillId  int    `json:"skill_id" binding:"required"`
+	// SubjectKey string        `json:"subject_key" binding:"required"`
+	StudyTime int           `json:"study_time" binding:"required"`
+	SpendTime float64       `json:"spend_time" binding:"required"`
+	AddTime   int           `json:"add_time" binding:"required"`
+	Note      string        `json:"note"`
+	Tags      []interface{} `json:"tags"`
 }
 
 // 处理标签，将标签数组转换为逗号分隔的字符串
@@ -389,26 +111,28 @@ func AddPlan(c *gin.Context) {
 		return
 	}
 
-	// 将分类、子分类和键值转换为对应的ID
-	catKey, subKey, key := mapToID(req.SubjectCatKey, req.SubjectSubKey, req.SubjectKey)
-	if catKey == 0 && subKey == 0 && key == 0 {
-		log.Println("无效的科目信息", userID)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的科目信息"})
-		return
-	}
+	// // 将分类、子分类和键值转换为对应的ID
+	// catKey, subKey, key := mapToID(req.SubjectCatKey, req.SubjectSubKey, req.SubjectKey)
+	// if catKey == 0 && subKey == 0 && key == 0 {
+	// 	log.Println("无效的科目信息", userID)
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "无效的科目信息"})
+	// 	return
+	// }
 
 	// 构造数据
 	study := Study{
-		UserID:        int(userID.(uint32)),
-		PlanName:      req.PlanName,
-		SubjectCatKey: catKey,
-		SubjectSubKey: subKey,
-		SubjectKey:    key,
-		StudyTime:     req.StudyTime,
-		Spend_Time:    req.SpendTime,
-		AddTime:       req.AddTime,
-		Note:          req.Note,
-		Tags:          tagsStr,
+		UserID:   int(userID.(uint32)),
+		PlanName: req.PlanName,
+		// SubjectCatKey: catKey,
+		// SubjectSubKey: subKey,
+		// SubjectKey:    key,
+		JobId:      req.JobId,
+		SkillId:    req.SkillId,
+		StudyTime:  req.StudyTime,
+		Spend_Time: req.SpendTime,
+		AddTime:    req.AddTime,
+		Note:       req.Note,
+		Tags:       tagsStr,
 	}
 
 	// 启动事务
@@ -477,12 +201,21 @@ func GetStudyData(c *gin.Context) {
 		if _, exists := date_info[dateStr]; exists {
 			sum_time += v.Spend_Time
 
-			// 获取学科名称
-			subjectName := SUBJECT_MAP[v.SubjectCatKey][v.SubjectSubKey][v.SubjectKey]
-			if subject_info[subjectName] == nil {
-				subject_info[subjectName] = make(map[string]float64)
+			// 获取技能名
+			var find_skill Skill
+			db = baseClass.GetDB()
+
+			// 保存更改
+			if err := db.Table("skills").Where("id = ?", v.SkillId).First(&find_skill).Error; err != nil {
+				log.Println("GetSkillTree数据库错误:", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
+				return
 			}
-			subject_info[subjectName][dateStr] += v.Spend_Time
+
+			if subject_info[find_skill.SkillName] == nil {
+				subject_info[find_skill.SkillName] = make(map[string]float64)
+			}
+			subject_info[find_skill.SkillName][dateStr] += v.Spend_Time
 		}
 	}
 
@@ -574,8 +307,16 @@ func GetPlanList(c *gin.Context) {
 			intSlice = append(intSlice, num)
 		}
 
-		// 获取学科名称
-		subjectName := SUBJECT_MAP[v.SubjectCatKey][v.SubjectSubKey][v.SubjectKey]
+		// 获取技能名
+		var find_skill Skill
+		db = baseClass.GetDB()
+
+		// 保存更改
+		if err := db.Table("skills").Where("id = ?", v.SkillId).First(&find_skill).Error; err != nil {
+			log.Println("GetSkillTree数据库错误:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
+			return
+		}
 
 		// 将study_time转换为'YYYY-MM-DD'格式
 		studyTimeStr := time.Unix(int64(v.StudyTime), 0).Format("2006-1-2")
@@ -583,7 +324,7 @@ func GetPlanList(c *gin.Context) {
 		// 构建单条记录
 		single := map[string]interface{}{
 			"plan_id":    v.ID,
-			"subject":    subjectName,
+			"subject":    find_skill.SkillName,
 			"study_time": v.StudyTime,
 			"spend_time": v.Spend_Time,
 			"tags":       intSlice,
@@ -642,19 +383,27 @@ func GetPlanDetail(c *gin.Context) {
 		intSlice = append(intSlice, num)
 	}
 
-	// 获取学科名称
-	// subjectName := SUBJECT_MAP[planDetail.SubjectCatKey][planDetail.SubjectSubKey][planDetail.SubjectKey]
+	// 获取技能名
+	var find_skill Skill
+	db = baseClass.GetDB()
+
+	// 保存更改
+	if err := db.Table("skills").Where("id = ?", planDetail.SkillId).First(&find_skill).Error; err != nil {
+		log.Println("GetSkillTree数据库错误:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
+		return
+	}
 
 	result := map[string]interface{}{
-		"plan_id":         planDetail.ID,
-		"plan_name":       planDetail.PlanName,
-		"subject_cat_key": CATEGORY_NAMES[planDetail.SubjectCatKey],
-		"subject_sub_key": SUBCATEGORY_NAMES[planDetail.SubjectCatKey][planDetail.SubjectSubKey],
-		"subject_key":     SUBJECT_MAP[planDetail.SubjectCatKey][planDetail.SubjectSubKey][planDetail.SubjectKey],
-		"study_time":      planDetail.StudyTime,
-		"spend_time":      planDetail.Spend_Time,
-		"note":            planDetail.Note,
-		"tags":            intSlice,
+		"plan_id":    planDetail.ID,
+		"plan_name":  planDetail.PlanName,
+		"job_name":   JOB_NAME_MAP[planDetail.JobId],
+		"skill_name": find_skill.SkillName,
+		// "subject_key":     SUBJECT_MAP[planDetail.SubjectCatKey][planDetail.SubjectSubKey][planDetail.SubjectKey],
+		"study_time": planDetail.StudyTime,
+		"spend_time": planDetail.Spend_Time,
+		"note":       planDetail.Note,
+		"tags":       intSlice,
 	}
 	c.JSON(http.StatusOK, result)
 }
@@ -674,7 +423,7 @@ func ChangePlan(c *gin.Context) {
 		return
 	}
 
-	requiredFields := []string{"plan_id", "study_time", "spend_time", "add_time", "subject_cat_key", "subject_sub_key", "subject_key"}
+	requiredFields := []string{"plan_id", "study_time", "spend_time", "add_time", "job_id", "skill_id"}
 	for _, field := range requiredFields {
 		if _, ok := data[field]; !ok {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "缺少必要参数"})
@@ -724,10 +473,7 @@ func ChangePlan(c *gin.Context) {
 	if val, ok := data["plan_name"].(string); ok {
 		planDetail.PlanName = val
 	}
-	planDetail.SubjectCatKey, planDetail.SubjectSubKey, planDetail.SubjectKey = mapToID(data["subject_cat_key"].(string), data["subject_sub_key"].(string), data["subject_key"].(string))
-	// planDetail.SubjectCatKey = int(data["subject_cat_key"].(float64))
-	// planDetail.SubjectSubKey = int(data["subject_sub_key"].(float64))
-	// planDetail.SubjectKey = int(data["subject_key"].(float64))
+	planDetail.JobId, planDetail.SkillId = int(data["job_id"].(float64)), int(data["skill_id"].(float64))
 
 	planDetail.StudyTime = int(data["study_time"].(float64))
 	planDetail.Spend_Time = data["spend_time"].(float64)
@@ -753,30 +499,35 @@ func ChangePlan(c *gin.Context) {
 // 将 SUBJECT_MAP 转换为带有分类名称的格式
 func GetSubjectMap(c *gin.Context) {
 
-	result := make(map[string]map[string][]string)
+	var skills []Skill
+	db := baseClass.GetDB()
+	if err := db.Find(&skills).Error; err != nil {
+		log.Println("GetSubjectMap数据库错误:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
+		return
+	}
 
-	for categoryID, subcategories := range SUBJECT_MAP {
-		categoryName, categoryExists := CATEGORY_NAMES[categoryID]
-		if !categoryExists {
+	SUBJECT_MAP := make(map[int]map[int]string)
+
+	for _, skill := range skills {
+		if _, ok := SUBJECT_MAP[skill.JobID]; !ok {
+			SUBJECT_MAP[skill.JobID] = make(map[int]string)
+		}
+		SUBJECT_MAP[skill.JobID][skill.ID] = skill.SkillName
+	}
+
+	result := make(map[int]map[string]interface{})
+
+	for jobID, skills := range SUBJECT_MAP {
+		jobName, jobExists := JOB_NAME_MAP[jobID]
+		if !jobExists {
 			continue
 		}
-
-		subcategoryMap := make(map[string][]string)
-		for subcategoryID, subjects := range subcategories {
-			subcategoryName, subcategoryExists := SUBCATEGORY_NAMES[categoryID][subcategoryID]
-			if !subcategoryExists {
-				continue
-			}
-
-			var subjectMap []string
-			for _, subjectName := range subjects {
-				subjectMap = append(subjectMap, subjectName)
-			}
-
-			subcategoryMap[subcategoryName] = subjectMap
+		tmp := map[string]interface{}{
+			"job_name": jobName,
+			"skills":   skills,
 		}
-
-		result[categoryName] = subcategoryMap
+		result[jobID] = tmp
 	}
 
 	c.JSON(http.StatusOK, result)
@@ -792,52 +543,49 @@ func GetSkillTree(c *gin.Context) {
 	}
 
 	type LearnedSkill struct {
-		SubjectCatKey int     `gorm:"column:subject_cat_key" json:"subject_cat_key"`
-		SubjectSubKey int     `gorm:"column:subject_sub_key" json:"subject_sub_key"`
-		SubjectKey    int     `gorm:"column:subject_key" json:"subject_key"`
-		SpendTime     float64 `gorm:"column:spend_time" json:"spend_time"`
+		JobId     int     `gorm:"column:job_id" json:"job_id"`
+		SkillId   int     `gorm:"column:skill_id" json:"skill_id"`
+		SpendTime float64 `gorm:"column:spend_time" json:"spend_time"`
 	}
 
 	// 查询有学习记录的科目
 	var learnedSkills []LearnedSkill
 	db := baseClass.GetDB()
-	db.Raw("SELECT subject_cat_key, subject_sub_key, subject_key, spend_time FROM study_plans WHERE user_id = ? AND spend_time > 0", userID).Scan(&learnedSkills)
+	db.Raw("SELECT job_id, skill_id, spend_time FROM study_plans WHERE user_id = ? AND spend_time > 0", userID).Scan(&learnedSkills)
 
 	// 组织返回数据
-	result := make(map[string]map[string][]string)
+	result := make(map[int]map[string]interface{})
 
 	for _, skill := range learnedSkills {
-		// 获取分类名
-		categoryName, categoryExists := CATEGORY_NAMES[skill.SubjectCatKey]
-		if !categoryExists {
+		// 获取岗位名
+		jobName, jobExists := JOB_NAME_MAP[skill.JobId]
+		if !jobExists {
 			continue
 		}
 
-		// 获取子分类名
-		subcategoryName, subcategoryExists := SUBCATEGORY_NAMES[skill.SubjectCatKey][skill.SubjectSubKey]
-		if !subcategoryExists {
-			continue
-		}
+		// 获取技能名
+		var find_skill Skill
+		db := baseClass.GetDB()
 
-		// 获取科目名称
-		subjectName, subjectExists := SUBJECT_MAP[skill.SubjectCatKey][skill.SubjectSubKey][skill.SubjectKey]
-		if !subjectExists {
-			continue
+		// 保存更改
+		if err := db.Table("skills").Where("id = ?", skill.SkillId).First(&find_skill).Error; err != nil {
+			log.Println("GetSkillTree数据库错误:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "系统优化中"})
+			return
 		}
 
 		// 如果分类不存在则初始化
-		if _, exists := result[categoryName]; !exists {
-			result[categoryName] = make(map[string][]string)
-		}
-
-		// 如果子分类不存在则初始化
-		if _, exists := result[categoryName][subcategoryName]; !exists {
-			result[categoryName][subcategoryName] = []string{}
+		if _, exists := result[skill.JobId]; !exists {
+			result[skill.JobId] = make(map[string]interface{})
+			result[skill.JobId]["job_name"] = jobName
+			result[skill.JobId]["skills"] = []string{} // 初始化 skills 列表
 		}
 
 		// 检查是否已经存在该科目名称
-		if !contains(result[categoryName][subcategoryName], subjectName) {
-			result[categoryName][subcategoryName] = append(result[categoryName][subcategoryName], subjectName)
+		if skills, ok := result[skill.JobId]["skills"].([]string); ok {
+			if !contains(skills, find_skill.SkillName) {
+				result[skill.JobId]["skills"] = append(skills, find_skill.SkillName)
+			}
 		}
 
 	}
