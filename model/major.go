@@ -26,7 +26,7 @@ type Major struct {
 // Comment 模型
 type Comment struct {
 	ID        int // 评论id
-	Major_id  int // 专业编号，1-通信工程，2-电子信息工程，3-计算机科学与技术，4-软件工程，5-网络工程，6-电子信息科学与技术，7-信息与计算科学
+	Major_id  int // 专业编号，1-通信工程，2-电子信息工程，3-计算机科学与技术，4-软件工程，6-电子信息科学与技术，7-信息与计算科学
 	Com_User  string
 	Com_Title string
 	Com_Body  string
@@ -45,7 +45,7 @@ var MAJOR_NAME_MAP = map[int]string{
 	2: "电子信息工程",
 	3: "计算机科学与技术",
 	4: "软件工程",
-	5: "网络工程",
+	// 5: "网络工程",
 	6: "电子信息科学与技术",
 	7: "信息与计算科学",
 }
