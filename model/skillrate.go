@@ -16,7 +16,8 @@ type Job struct {
 	ID           int
 	Type         int // 工作分类，0-工程类，1-信息类，2-理学类
 	Main_skill   string
-	Expand_skill string
+	Expand_skill string `gorm:"column:expand_skill"`
+	Data_rows    int
 }
 
 // SubjectRate 模型
@@ -60,7 +61,7 @@ func GetSubjectRate(c *gin.Context) {
 		return
 	}
 
-	record_rows := db_result.RowsAffected
+	// record_rows := db_result.RowsAffected
 
 	var subjects_info []map[string]interface{}
 	var maxRate float32
@@ -88,7 +89,7 @@ func GetSubjectRate(c *gin.Context) {
 	}
 
 	var job_dec Job
-	db_result = db.Where("id = ?", job_id).Find(&job_dec)
+	db_result = db.Where("id = ?", job_id).First(&job_dec)
 	if db_result.Error != nil {
 		log.Println("Job查询数据库失败:", db_result.Error)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "查询数据库失败"})
@@ -100,7 +101,7 @@ func GetSubjectRate(c *gin.Context) {
 	threeDaysAgoMidnight := time.Date(threeDaysAgo.Year(), threeDaysAgo.Month(), threeDaysAgo.Day(), 0, 0, 0, 0, threeDaysAgo.Location()).Unix()
 	result := map[string]interface{}{
 		"subject_value": subjects_info,
-		"data_rows":     record_rows * 382,
+		"data_rows":     job_dec.Data_rows,
 		"last_update":   threeDaysAgoMidnight,
 		"main_skill":    job_dec.Main_skill,
 		"expand_skill":  job_dec.Expand_skill,
