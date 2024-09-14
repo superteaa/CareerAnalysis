@@ -13,8 +13,10 @@ import (
 
 // Job 模型
 type Job struct {
-	ID   int
-	Type int // 工作分类，0-工程类，1-信息类，2-理学类
+	ID           int
+	Type         int // 工作分类，0-工程类，1-信息类，2-理学类
+	Main_skill   string
+	Expand_skill string
 }
 
 // SubjectRate 模型
@@ -85,10 +87,10 @@ func GetSubjectRate(c *gin.Context) {
 		subjects_info = append(subjects_info, maxSubject)
 	}
 
-	var major_dec Major
-	db_result = db.Where("id = ?", job_id).Find(&major_dec)
+	var job_dec Job
+	db_result = db.Where("id = ?", job_id).Find(&job_dec)
 	if db_result.Error != nil {
-		log.Println("Major查询数据库失败:", db_result.Error)
+		log.Println("Job查询数据库失败:", db_result.Error)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "查询数据库失败"})
 		return
 	}
@@ -100,8 +102,8 @@ func GetSubjectRate(c *gin.Context) {
 		"subject_value": subjects_info,
 		"data_rows":     record_rows * 382,
 		"last_update":   threeDaysAgoMidnight,
-		"main_skill":    major_dec.Main_skill,
-		"expand_skill":  major_dec.Expand_skill,
+		"main_skill":    job_dec.Main_skill,
+		"expand_skill":  job_dec.Expand_skill,
 	}
 
 	c.JSON(http.StatusOK, result)
