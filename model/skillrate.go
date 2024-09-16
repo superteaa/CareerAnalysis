@@ -27,6 +27,7 @@ type SubjectRate struct {
 	Skill_Name string
 	Major_id   int
 	Rate       float32
+	Study_url  string
 }
 
 var JOB_TYPE_MAP = map[int]string{
@@ -64,28 +65,18 @@ func GetSubjectRate(c *gin.Context) {
 	// record_rows := db_result.RowsAffected
 
 	var subjects_info []map[string]interface{}
-	var maxRate float32
-	maxSubject := map[string]interface{}{
-		"subject_name": "Html + css + javascript",
-	}
+
 	for _, v := range subject_rate {
-		if v.Subject_Id == 11 {
-			if v.Rate > maxRate {
-				maxRate = v.Rate
-				maxSubject["value"] = v.Rate
-			}
-		} else {
 
-			sigle := map[string]interface{}{
-				"value":        v.Rate,
-				"subject_name": v.Skill_Name,
-			}
-			subjects_info = append(subjects_info, sigle)
+		sigle := map[string]interface{}{
+			"value":        v.Rate,
+			"subject_name": v.Skill_Name,
 		}
-	}
-
-	if maxSubject != nil {
-		subjects_info = append(subjects_info, maxSubject)
+		if v.Study_url != "" {
+			log.Println(v.Study_url)
+			sigle["study_url"] = v.Study_url
+		}
+		subjects_info = append(subjects_info, sigle)
 	}
 
 	var job_dec Job
